@@ -208,3 +208,112 @@ This guide is designed for both beginners and advanced users who want to master 
     git ls-remote --tags origin
     ```
 
+### Git stash (Temporary storage)
+
+  - stash changes
+    ```
+    git stash
+    ```
+  - add custom message when stash
+    ```
+    git stash push -m "your message"
+    ```
+  - include untracked (new) file
+    ```
+    git stash --include-untracked
+    // or
+    git stash -u
+    ```
+  - include untracked + ignored files 
+    ```
+    git stash --all
+    ```
+  - view stash list
+    ```
+    git stash list
+    ```
+  - apply last stash changes
+    ```
+    git stash pop
+    ```
+  - apply nth stash changes
+    ```
+    git stash pop <stash-head>
+    ```
+  - apply stash changes without deleting it
+    ```
+    git stash apply <stash-head>
+    ```
+  - delete a stash changes
+    ``` 
+    git stash drop <stash-head>
+    ```
+  - ❗ clear all stash _(make sure you know what you are doing!)_
+    ```
+    git stash clear
+    ```
+  - see stash changes
+    ```
+    git stash show <stash-head>
+    ```
+  - view path changes
+    ```
+    git stash show --patch <stash-head>
+    ```
+  - creating branch from stash
+    ``` 
+    git stash branch "branch-name" <stash-head>
+    ```
+    (usable when reapplying stash might create conflict and you want to test you stash changes or make new branch)
+
+### Reset changes
+
+  - reset last commit
+    ```
+    git reset HEAD~1
+    ```
+  - reset last n number of commits
+    ```
+    git reset HEAD~n
+    ```
+  - reset modes: 
+    - `--soft`: does not reset the index or working tree files
+    - `--hard`: reset the index + working tree files
+    - `--mixed`: reset the index but *not* working tree files
+  - reset the HEAD to origin/remote branch
+    ```
+    git reset origin/<branch-name>
+    ```
+  - reset last merge commit
+    ```
+    git reset --merge HEAD~1
+    ```
+  - abort merge commit (not commit yet)
+    ```
+    git reset --merge
+    // or
+    git merge --abort
+    ```
+
+### Revert changes
+  - revert a commit
+    ```
+    git revert <commit-sha>
+    ```
+  - edit message
+    ```
+    git revert --edit <commit-sha>
+    ```
+  - don’t want to edit message
+    ```
+    git revert --no-edit <commit-sha>
+    ```
+  - stage changes instead of auto commit 
+    ```
+    git revert --no-commit <commit-sha>
+    ```
+  - revert range of commits
+    ```
+    git revert first-bad-commit^..last-bad-commit
+    ```
+
