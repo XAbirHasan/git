@@ -317,3 +317,126 @@ This guide is designed for both beginners and advanced users who want to master 
     git revert first-bad-commit^..last-bad-commit
     ```
 
+
+### Rebase git commit history
+
+  - rebase your branch head
+    ```
+    git rebase <parent-branch>
+    ```
+  - interactive rebase (change specific commit or update branch history)
+    ```
+    git rebase --interactive <commit-sha>^
+    ```
+    (here ^(caret) means parent to that commit) 
+  - continue rebasing
+    ```
+    git rebase --continue
+    ```
+  - abort rebase
+    ```
+    git rebase --abort
+    ```
+### Debugging with git (bisect)
+
+  - To start debugging
+    ```
+    git bisect start
+    git bisect good sha-of-good-commit
+    git bisect bad sha-of-bad-commit
+    ```
+    If bad commit is not provided, default is the last commit.
+    Then *Test* your application and provide info about which state is good and which sate is bad.
+  - to specify good state
+    ```
+    git bisect good
+    ```
+  - to specify bad state
+    ```
+    git bisect bad
+    ```
+  - terminate bisect
+    ```
+    git bisect reset
+    ```
+
+### Reflog (insurance in git)
+  
+  - The reference logs
+    ```
+    git reflog
+    ```
+    reference logs expiry time: default is 90 days
+  - set expiry time 
+    ```
+    git config gc.reflogExpire <time>
+    // set for 90 days
+    git config gc.reflogExpire 90.days
+    // set never
+    git config gc.reflogExpire never
+    ```
+  - view expiry time
+    ```
+    git config --get gc.reflogExpire
+    ```
+  - unset expiry time
+    ```
+    git config --unset gc.reflogExpire
+    ```
+  - tree view of git reflog (works with gitk)
+    ```
+    gitk --all `git reflog | cut -c1-7`
+    ```
+
+#### Recover deleted commit
+  - delete or reset your last commit (mostly used: `git reset --hard HEAD~1`)
+    To get back on previous state
+    ```
+    git reset --hard HEAD@{1}
+    ```
+  - if you make any commit after deleting or get back an old deleted commit:
+    1. List the reflog history
+        ```
+        git reflog
+        ```
+    2. find your commit from the reflog history
+    3. add commit using git cherry-pick command
+        ```
+        git cherry-pick <commit-sha | @HEAD{number}>
+        ```
+  - we can also copy commit message from the reflog
+    ```
+    git commit --reuse-message=<commit-sha | @HEAD{number}>
+    // or 
+    git commit -C <commit-sha | @HEAD{number}>
+    ```
+  - copy commit message from the reflog and enable editing
+    ```
+    git commit --reedit-message=<commit-sha | @HEAD{number}> 
+    // or 
+    git commit -c <commit-sha | @HEAD{number}>
+    ```
+#### Recover deleted branch
+  - if you delete your old branch or accidentally delete any branch
+    1. List the reflog history
+        ```
+        git reflog
+        ```
+    2. find your list commit on your deleted branch
+    3. then checkout to your branch
+        ```
+        git checkout -b "branch-name" <commit-sha | @HEAD{number}>
+        ```
+#### ❌ Don’t use this commands
+
+  ⚠️ Ensure that you are doing what you are supposed to.
+  - clean old or unapproachable reflog entries
+    ```
+    git reflog expire
+    ```
+  - delete reflog entries
+    ```
+    git reflog delete  
+    ```
+  This command causes data loss (use this at you own risk :bomb:)
+
