@@ -337,6 +337,14 @@ This guide is designed for both beginners and advanced users who want to master 
     ```
     git rebase --abort
     ```
+  - add fixup commit
+    ```
+    git commit --fixup=<commit-sha>
+    ```
+  - auto squash commit
+    ```
+    git rebase --interactive --autosquash <commit-sha>
+    ```
 ### Debugging with git (bisect)
 
   - To start debugging
