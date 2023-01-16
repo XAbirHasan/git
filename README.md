@@ -317,6 +317,29 @@ This guide is designed for both beginners and advanced users who want to master 
     git revert first-bad-commit^..last-bad-commit
     ```
 
+### Patch
+  - make patch file
+    ```
+    git diff > fileName.patch
+    ```
+  - make patch file from stage
+    ```
+    git diff --staged > fileName.patch
+    // or
+    git diff --cached > fileName.patch
+    ```
+  - apply patch changes
+    ```
+    git apply fileName.patch
+    ```
+  - patch from n top commits
+    ```
+    git format-patch -n <sha>
+    ```
+  - apply patch changes (format-patch)
+    ```
+    git am < file.patch
+    ```
 
 ### Rebase git commit history
 
@@ -367,6 +390,9 @@ This guide is designed for both beginners and advanced users who want to master 
     ```
     git bisect reset
     ```
+
+
+
 
 ### Reflog (insurance in git)
   
