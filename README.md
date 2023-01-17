@@ -11,7 +11,7 @@ I hope that by sharing my experience, I can help others who may be struggling wi
 This guide is designed for both beginners and advanced users who want to master the art of Git and improve their workflow. Whether you are a new developer just starting out with version control or an experienced professional looking to optimize your Git skills, this guide has something for everyone. We will cover essential Git commands, advanced techniques, and helpful hacks that will help you work more efficiently and effectively with Git. So let's dive in and discover the full power of Git!
 
 ## Git in-depth
-
+  - [git status](./details/git%20status/README.md)
 ## Cheatsheet
 
 ### Checking status of your files
