@@ -109,7 +109,10 @@ This guide is designed for both beginners and advanced users who want to master 
 
 
 ### Git Branching
-
+  - show current branch
+    ```
+    git branch --show-current
+    ```
   - list of all local branch
     ```
     git branch
@@ -125,6 +128,10 @@ This guide is designed for both beginners and advanced users who want to master 
     git branch --verbose
     // or
     git branch -v
+    ```
+  - see the branches that have been merged into the current branch
+    ```
+    git branch --merged
     ```
   - create a new branch
     ```
