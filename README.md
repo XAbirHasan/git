@@ -12,6 +12,7 @@ This guide is designed for both beginners and advanced users who want to master 
 
 ## Git in-depth
   - [git status](./details/git%20status/README.md)
+  - [git log](./details/git-log/README.md)
 ## Cheatsheet
 
 ### Checking status of your files
