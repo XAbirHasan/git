@@ -14,6 +14,7 @@ This guide is designed for both beginners and advanced users who want to master 
   - [what is git](./details/git.md)
   - [git status](./details/git-status.md)
   - [git log](./details/git-log.md)
+  - [git commit](./details/git-commit.md)
 ## Cheatsheet
 
 ### Checking status of your files
