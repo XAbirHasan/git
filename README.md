@@ -16,6 +16,7 @@ This guide is designed for both beginners and advanced users who want to master 
   - [git log](./details/git-log.md)
   - [git commit](./details/git-commit.md)
   - [git branch](./details/git-branch.md)
+  - [git stash](./details/git-stash.md)
 ## Cheatsheet
 
 ### Checking status of your files
