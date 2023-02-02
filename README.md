@@ -19,6 +19,7 @@ This guide is designed for both beginners and advanced users who want to master 
   - [git stash](./details/git-stash.md)
   - [patch](./details/patch.md)
   - [git reset](./details/git-reset.md)
+  - [git revert](./details/git-revert.md)
 ## Cheatsheet
 
 ### Checking status of your files
