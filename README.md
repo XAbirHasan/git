@@ -18,6 +18,7 @@ This guide is designed for both beginners and advanced users who want to master 
   - [git branch](./details/git-branch.md)
   - [git stash](./details/git-stash.md)
   - [patch](./details/patch.md)
+  - [git tag](./details/git-tag.md)
   - [git reset](./details/git-reset.md)
   - [git revert](./details/git-revert.md)
 ## Cheatsheet
