@@ -21,6 +21,7 @@ This guide is designed for both beginners and advanced users who want to master 
   - [git tag](./details/git-tag.md)
   - [git reset](./details/git-reset.md)
   - [git revert](./details/git-revert.md)
+  - [git bisect](./details/git-bisect.md)
 ## Cheatsheet
 
 ### Checking status of your files
