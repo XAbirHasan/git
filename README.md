@@ -23,6 +23,7 @@ This guide is designed for both beginners and advanced users who want to master 
   - [git revert](./details/git-revert.md)
   - [git rebase](./details/git-rebase.md)
   - [git bisect](./details/git-bisect.md)
+  - [git reflog](./details/git-reflog.md)
 ## Cheatsheet
 
 ### Checking status of your files
