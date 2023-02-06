@@ -87,6 +87,10 @@ This guide is designed for both beginners and advanced users who want to master 
     ```
     git log --pretty=reference
     ```
+  - View git history of specific line
+    ```
+    git log --pretty=short -u -L <start line>,<end line>:<file path>
+    ```
 
 ### Commit
 
