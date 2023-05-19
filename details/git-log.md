@@ -278,3 +278,43 @@ index def123..ghi456 123
 ```
 
 In this example, the output of the `git log --pretty=short -u -L 20,20:index.html` command includes the changes made to line `20` in each of the commits. The `diff` output shows the difference between the old version of the file (denoted by `--- a/index.html`) and the new version of the file (denoted by `+++ b/index.html`). The `@@` lines indicate the range of lines that have changed, and the `-` and `+` symbols show which lines have been added or removed.
+
+## Search for `code` within Git history
+You can use the `git log command` along with the `-S` option, which stands for "pickaxe" or "string" search. This option allows you to search for a specific string or code snippet that was either added or removed in the commits.
+
+Here's an example of how to use the `-S` option to search for a code snippet:
+```
+git log -S "CodeSnippet or searchString"
+```
+
+You can also provide additional options to further refine your search, such as `--author` to search for commits by a specific author or `--since` and `--until` to specify a date range.
+
+For example, let's say you want to search for the code snippet `"console.log"` added by a specific author named `"XAbirHasan"` since a certain date:
+```
+git log --author="XAbirHasan" --since="2023-05-20" -S "console.log"
+```
+
+## Search for `commit message` within Git history
+When searching git log by commit message, you can use the `git log --grep=<pattern>` option. It allows you to find commits with commit messages that match a specific pattern or keyword.
+
+For example, you're searching for "bug" keyword:
+```
+git log --grep="bug"
+```
+history:
+```
+commit 123456789abcdef
+Author: XAbirHasan <abir@example.com>
+Date:   2023-05-20
+
+    Fix bug in file.js
+
+commit 987654321fedcba
+Author: XAbirHasan <abir@example.com>
+Date:   2023-05-18
+
+    Fix bug in module.py
+.
+.
+.
+```

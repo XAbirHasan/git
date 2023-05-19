@@ -91,6 +91,14 @@ This guide is designed for both beginners and advanced users who want to master 
     ```
     git log --pretty=short -u -L <start line>,<end line>:<file path>
     ```
+  - Search for `code` within Git history
+    ```
+    git log -S "CodeSnippet or searchString"
+    ```
+  - Search for `commit message` within Git history
+    ```
+    git log --grep=<pattern>
+    ```
 
 ### Commit
 
