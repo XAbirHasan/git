@@ -15,6 +15,7 @@ This guide is designed for both beginners and advanced users who want to master 
   - [git status](./details/git-status.md)
   - [git log](./details/git-log.md)
   - [git commit](./details/git-commit.md)
+  - [git cherry-pick](./details/git-cherry-pick.md)
   - [git branch](./details/git-branch.md)
   - [git stash](./details/git-stash.md)
   - [patch](./details/patch.md)
