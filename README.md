@@ -25,6 +25,8 @@ This guide is designed for both beginners and advanced users who want to master 
   - [git rebase](./details/git-rebase.md)
   - [git bisect](./details/git-bisect.md)
   - [git reflog](./details/git-reflog.md)
+## Presentation slides
+  - Follow the link 👉 [google slides](https://docs.google.com/presentation/d/1m0p_X8EIhBhEi5-Qr8kFxBSDy3amSwcv/edit?usp=sharing&ouid=104311828414183489242&rtpof=true&sd=true)
 ## Cheatsheet
 
 ### Checking status of your files
