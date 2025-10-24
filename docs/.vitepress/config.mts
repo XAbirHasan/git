@@ -26,13 +26,42 @@ export default defineConfig({
         ]
       },
       {
-        text: 'Basic Commands',
+        text: 'Essential Commands',
         collapsed: false,
         items: [
+          { text: 'Git Clone', link: '/commands/clone' },
           { text: 'Git Status', link: '/commands/status' },
+          { text: 'Git Add', link: '/commands/add' },
           { text: 'Git Commit', link: '/commands/commit' },
-          { text: 'Git Log', link: '/commands/log' },
-          { text: 'Git Branch', link: '/commands/branch' }
+          { text: 'Git Diff', link: '/commands/diff' },
+          { text: 'Git Log', link: '/commands/log' }
+        ]
+      },
+      {
+        text: 'Branching & Merging',
+        collapsed: false,
+        items: [
+          { text: 'Git Branch', link: '/commands/branch' },
+          { text: 'Git Merge', link: '/commands/merge' },
+          { text: 'Git Rebase', link: '/commands/rebase' }
+        ]
+      },
+      {
+        text: 'Remote Repositories',
+        collapsed: false,
+        items: [
+          { text: 'Git Remote', link: '/commands/remote' },
+          { text: 'Git Fetch & Pull', link: '/commands/pull' },
+          { text: 'Git Push', link: '/commands/push' }
+        ]
+      },
+      {
+        text: 'Undoing Changes',
+        collapsed: false,
+        items: [
+          { text: 'Git Restore', link: '/commands/restore' },
+          { text: 'Git Reset', link: '/commands/reset' },
+          { text: 'Git Revert', link: '/commands/revert' }
         ]
       },
       {
@@ -41,9 +70,6 @@ export default defineConfig({
         items: [
           { text: 'Git Stash', link: '/commands/stash' },
           { text: 'Git Cherry-Pick', link: '/commands/cherry-pick' },
-          { text: 'Git Rebase', link: '/commands/rebase' },
-          { text: 'Git Reset', link: '/commands/reset' },
-          { text: 'Git Revert', link: '/commands/revert' },
           { text: 'Git Tag', link: '/commands/tag' },
           { text: 'Git Reflog', link: '/commands/reflog' },
           { text: 'Git Bisect', link: '/commands/bisect' }

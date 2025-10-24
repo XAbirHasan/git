@@ -2,6 +2,23 @@
 
 Quick reference for the most commonly used Git commands. This cheatsheet provides fast access to essential Git operations.
 
+## Getting Started
+
+### Clone a Repository
+```bash
+# Clone via HTTPS
+git clone https://github.com/user/repo.git
+
+# Clone via SSH
+git clone git@github.com:user/repo.git
+
+# Shallow clone (faster)
+git clone --depth 1 <url>
+
+# Clone specific branch
+git clone -b branch-name <url>
+```
+
 ## Checking Status of Your Files
   
 ### View File Status
@@ -123,6 +140,202 @@ git commit --amend
 ```bash
 git commit --amend --no-edit
 ```
+
+## Staging Files (Git Add)
+
+### Add Specific Files
+```bash
+git add file.txt
+git add file1.txt file2.txt
+```
+
+### Add All Changes
+```bash
+git add .
+git add --all
+git add -A
+```
+
+### Interactive Staging (Patch Mode)
+```bash
+# Stage changes interactively
+git add -p
+
+# Stage specific hunks
+git add --patch file.txt
+```
+
+### Add Modified Files Only
+```bash
+# Don't add new files
+git add -u
+```
+
+## Viewing Differences (Git Diff)
+
+### View Unstaged Changes
+```bash
+git diff
+```
+
+### View Staged Changes
+```bash
+git diff --staged
+# or
+git diff --cached
+```
+
+### Compare Branches
+```bash
+git diff branch1..branch2
+git diff main...feature
+```
+
+### Compare Commits
+```bash
+git diff commit1 commit2
+git diff HEAD~1
+```
+
+### Diff Specific File
+```bash
+git diff file.txt
+git diff --staged file.txt
+```
+
+### Show Only Changed Files
+```bash
+git diff --name-only
+git diff --name-status
+```
+
+## Merging Branches
+
+### Merge Branch into Current
+```bash
+git merge branch-name
+```
+
+### Merge with No Fast-Forward
+```bash
+git merge --no-ff branch-name
+```
+
+### Squash Merge
+```bash
+git merge --squash branch-name
+git commit -m "Squashed changes"
+```
+
+### Abort Merge
+```bash
+git merge --abort
+```
+
+## Remote Repositories
+
+### View Remotes
+```bash
+git remote
+git remote -v
+```
+
+### Add Remote
+```bash
+git remote add origin https://github.com/user/repo.git
+git remote add upstream https://github.com/original/repo.git
+```
+
+### Remove Remote
+```bash
+git remote remove remote-name
+```
+
+### Change Remote URL
+```bash
+git remote set-url origin new-url
+```
+
+## Fetching & Pulling
+
+### Fetch from Remote
+```bash
+git fetch
+git fetch origin
+git fetch --all
+```
+
+### Pull Changes
+```bash
+git pull
+git pull origin main
+git pull --rebase
+```
+
+### Pull with Fast-Forward Only
+```bash
+git pull --ff-only
+```
+
+## Pushing Changes
+
+### Push to Remote
+```bash
+git push
+git push origin main
+```
+
+### Push and Set Upstream
+```bash
+git push -u origin branch-name
+```
+
+### Push All Branches
+```bash
+git push --all
+```
+
+### Push Tags
+```bash
+git push --tags
+git push origin v1.0.0
+```
+
+### Force Push (Use with Caution!)
+```bash
+git push --force-with-lease
+```
+
+### Delete Remote Branch
+```bash
+git push origin --delete branch-name
+```
+
+## Restoring Files (Git Restore)
+
+### Discard Changes in File
+```bash
+git restore file.txt
+git restore .
+```
+
+### Unstage File
+```bash
+git restore --staged file.txt
+```
+
+### Restore from Specific Commit
+```bash
+git restore --source=HEAD~1 file.txt
+git restore --source=main file.txt
+```
+
+### Interactive Restore
+```bash
+git restore -p file.txt
+```
+
+
 
 ## Git Branching
 
