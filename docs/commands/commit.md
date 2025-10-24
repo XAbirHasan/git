@@ -109,4 +109,4 @@ $ git commit --amend --no-edit
 ```
 In this example, the first commit "initial commit" was made with only one file "file.txt", but later the developer realized that they forgot to add "forgotten-file.txt" to the commit. So by using git commit --amend --no-edit the last commit was updated to include the "forgotten-file.txt".
 
-🚑:exclamation: Please note that this command *<b>rewrites the commit history</b>*, so use it with caution if the branch is already pushed to a remote repository or shared with other collaborators.
+🚑 :exclamation:  **Please note** that this command **rewrites the commit history**, so use it with caution if the branch is already pushed to a remote repository or shared with other collaborators.

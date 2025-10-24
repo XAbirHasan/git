@@ -1,6 +1,6 @@
 # Git bisect
 
-Git bisect is a powerful tool that allows developers to find the source of a <b>bug</b> in their code by systematically searching through the Git history. The process of using `git bisect` involves finding a known good commit, then marking it as such, and finding a known bad commit, then marking it as such. Then, Git will perform a binary search through the Git history, checking out the code at different points and allowing you to test the application.
+Git bisect is a powerful tool that allows developers to find the source of a **bug** in their code by systematically searching through the Git history. The process of using `git bisect` involves finding a known good commit, then marking it as such, and finding a known bad commit, then marking it as such. Then, Git will perform a binary search through the Git history, checking out the code at different points and allowing you to test the application.
 
 One common use case for git bisect is when a bug has been reported in your application, but you're not sure when it was introduced. You could manually search through the Git history, but this can be time-consuming and error-prone. With git bisect, you can quickly narrow down the range of commits to the one that introduced the bug.
 

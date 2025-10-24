@@ -156,4 +156,4 @@ git revert -m 2 abc123
 This will preserve the merge commit with the SHA value of abc123 and create a new commit that undoes the changes made in the merge.
 
 # Conclusion
-The `git revert` command is an essential tool in any Git workflow, allowing you to undo changes made in <b>specific commits</b> or <b>ranges of commits</b>. Whether you need to fix mistakes or test different solutions, the `git revert` command gives you the flexibility to revert changes in a controlled and ✔️safe manner.
+The `git revert` command is an essential tool in any Git workflow, allowing you to undo changes made in **specific commits** or **ranges of commits**. Whether you need to fix mistakes or test different solutions, the `git revert` command gives you the flexibility to revert changes in a controlled and ✔️safe manner.

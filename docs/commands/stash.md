@@ -80,4 +80,4 @@ This command will remove the specified stash from the list of stashes.
 ```
 $ git stash clear
 ```
-This command will remove all stashes from the list of stashes, be careful with this command, make sure you know what you are doing, as <b>_it's not reversible_</b>.
+This command will remove all stashes from the list of stashes, be careful with this command, make sure you know what you are doing, as **_it's not reversible_**.

@@ -208,5 +208,5 @@ In summary, `git reset` is a powerful command that allows you to undo or discard
 
 It's important to note that all of these commands will discard changes and cannot be undone easily, so it's always a good idea to make a backup or use git stash before using them. 
 
-Don't worry 😃; Even if you messed up with git, there is a way to recover everything.([checkout git reflog](/details/git-reflog.md))
+Don't worry 😃; Even if you messed up with git, there is a way to recover everything.([checkout git reflog](/commands/reflog.md))
 

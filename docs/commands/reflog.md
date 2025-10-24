@@ -208,17 +208,17 @@ If you want to un-do git reset:
     ```
 
 ## Some drawbacks of git reflog
-- <b>Git reflog is only available locally and does not provide a way to share the reference logs with others</b>: Git reflog is only available on the local machine where the repository is stored. It does not provide a way to share the reference logs with others, making it unsuitable for use in team environments where collaboration is required.
+- **Git reflog is only available locally and does not provide a way to share the reference logs with others**: Git reflog is only available on the local machine where the repository is stored. It does not provide a way to share the reference logs with others, making it unsuitable for use in team environments where collaboration is required.
 
-- <b>The information in the reference logs may become outdated or irrelevant if the repository is not frequently used or if the reference logs are not updated regularly</b>: If the repository is not frequently used or if the reference logs are not updated regularly, the information in the reference logs may become outdated or irrelevant. This can make it difficult to use the reference logs to recover from mistakes.
+- **The information in the reference logs may become outdated or irrelevant if the repository is not frequently used or if the reference logs are not updated regularly**: If the repository is not frequently used or if the reference logs are not updated regularly, the information in the reference logs may become outdated or irrelevant. This can make it difficult to use the reference logs to recover from mistakes.
 
-- <b>Git reflog is not a permanent solution for preserving the history of your repository</b>: While git reflog is useful for recovering from mistakes, it is not a permanent solution for preserving the history of your repository. If you use the git gc command to clean up your repository, the reference logs will be deleted, even if the expiry time is set to never.
+- **Git reflog is not a permanent solution for preserving the history of your repository**: While git reflog is useful for recovering from mistakes, it is not a permanent solution for preserving the history of your repository. If you use the git gc command to clean up your repository, the reference logs will be deleted, even if the expiry time is set to never.
 
-- <b>If you use the `git gc` command, the reference logs will be deleted even if the expiry time is set to never</b>: This is because the git gc command is designed to clean up the repository and remove any data that is not needed, including the reference logs.
+- **If you use the `git gc` command, the reference logs will be deleted even if the expiry time is set to never**: This is because the git gc command is designed to clean up the repository and remove any data that is not needed, including the reference logs.
 
-- <b>Regular backup or use of other version control systems is necessary to ensure the safety and security of your data</b>: In order to ensure that your data is safe and secure, it is important to regularly backup your repository or use other version control systems.
+- **Regular backup or use of other version control systems is necessary to ensure the safety and security of your data**: In order to ensure that your data is safe and secure, it is important to regularly backup your repository or use other version control systems.
 
-- <b>The reference logs can be difficult to interpret, especially for someone who is not familiar with git and version control systems</b>: The information in the reference logs can be difficult to interpret, especially for someone who is not familiar with git and version control systems. This can make it challenging to use the reference logs to recover from mistakes or to understand the history of the repository.
+- **The reference logs can be difficult to interpret, especially for someone who is not familiar with git and version control systems**: The information in the reference logs can be difficult to interpret, especially for someone who is not familiar with git and version control systems. This can make it challenging to use the reference logs to recover from mistakes or to understand the history of the repository.
 
 
 ## 🚫 Avoid Using These Commands

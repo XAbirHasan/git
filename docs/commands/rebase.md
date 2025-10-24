@@ -3,8 +3,8 @@ Rebasing is an important concept in Git that allows you to reorganize the commit
 
 ## Rebase Your Branch Head
 The first use of the rebase command is to rebase your branch head. To do this, you need to specify the parent branch that you want to rebase to. Here's the syntax:
-```
-git rebase <parent-branch>
+```bash
+git rebase PARENT_BRANCH
 ```
 For example, if you have a branch named `feature-branch` that is based on the `master` branch, you can rebase the head of the feature-branch to the master branch with the following command:
 
@@ -16,10 +16,10 @@ This will update the branch head of `feature-branch` to the latest commit of the
 ## Interactive Rebase
 The next use of the rebase command is the interactive rebase. This allows you to change specific commits or update your branch history. To do this, you need to specify the parent of the commit that you want to start the interactive rebase with. Here's the syntax:
 
+```bash
+git rebase --interactive COMMIT_SHA^
 ```
-git rebase --interactive <commit-sha>^
-```
-Here, `<commit-sha>` is the commit reference you want to start the rebase from, and `^`(caret) means parent to that commit. 
+Here, `COMMIT_SHA` is the commit reference you want to start the rebase from, and `^`(caret) means parent to that commit. 
 
 For example, if you want to start an interactive rebase on the parent of the commit with the SHA `ea5972f`, you can run the following command:
 
@@ -103,10 +103,10 @@ Hope this example helps you understand how to use interactive rebasing in Git. G
 
 ## Adding Fixup Commit
 A fixup commit is a type of commit that allows you to quickly apply changes to a specific commit. This can be useful when you want to add changes to a previous commit without creating a new commit or modifying the commit history. The command to add a fixup commit is:
+```bash
+git commit --fixup=COMMIT_SHA
 ```
-git commit --fixup=<commit-sha>
-```
-Here, `<commit-sha>` is the commit reference you want to add the changes to. 
+Here, `COMMIT_SHA` is the commit reference you want to add the changes to. 
 
 For example, if you want to add changes to the second last commit, you can run the following command:
 ```
@@ -114,15 +114,15 @@ git commit --fixup=HEAD^
 ```
 This will create a new commit with the changes and mark it as a fixup commit.
 
-<b>Notes</b>: Remember you need to perform <b>auto squash</b> in order to clean your commit history.
+**Notes**: Remember you need to perform **auto squash** in order to clean your commit history.
 
 ## Auto Squash Commit
 Auto squashing allows you to combine multiple commits into one. This can be useful when you want to clean up your commit history or make it easier to read. The command to auto squash commits is:
 
+```bash
+git rebase --interactive --autosquash COMMIT_SHA
 ```
-git rebase --interactive --autosquash <commit-sha>
-```
-Where <commit-sha> is the unique identifier for the commit that you want to squash with the preceding fixup commit. The `--interactive` flag specifies that you want to perform an interactive rebase and the `--autosquash` flag tells Git to automatically rearrange the commit that you are fixing up with the commit that has the matching `--fixup` message.
+Where `COMMIT_SHA` is the unique identifier for the commit that you want to squash with the preceding fixup commit. The `--interactive` flag specifies that you want to perform an interactive rebase and the `--autosquash` flag tells Git to automatically rearrange the commit that you are fixing up with the commit that has the matching `--fixup` message.
 
 The `--autosquash` option is used with the interactive rebase to automatically squash fixup commits with the corresponding commit.
 
