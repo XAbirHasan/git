@@ -82,6 +82,12 @@ export default defineConfig({
         ]
       },
       {
+        text: 'Productivity',
+        items: [
+          { text: 'Git Worktree', link: '/productivity/worktree' }
+        ]
+      },
+      {
         text: 'Resources',
         items: [
           { text: 'Cheatsheet', link: '/cheatsheet' }
