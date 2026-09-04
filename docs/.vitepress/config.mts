@@ -1,10 +1,12 @@
 import { defineConfig } from 'vitepress'
 
+const base = '/git/'
+
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Git Mastery Guide",
   description: "Boost your productivity with git - A comprehensive guide for beginners and advanced users",
-  base: '/git/',
+  base,
   
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
@@ -115,8 +117,8 @@ export default defineConfig({
   },
 
   head: [
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
-    ['meta', { name: 'theme-color', content: '#4f46e5' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: `${base}logo.svg` }],
+    ['meta', { name: 'theme-color', content: '#ef4a26' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:locale', content: 'en' }],
     ['meta', { property: 'og:title', content: 'Git Mastery Guide | Boost Your Productivity' }],
