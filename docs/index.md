@@ -3,8 +3,8 @@ layout: home
 
 hero:
   name: "Git Mastery Guide"
-  text: "Boost Your Productivity with Git"
-  tagline: A comprehensive guide for beginners and advanced users to master Git and improve their workflow
+  text: "Boost your productivity with Git"
+  tagline: From the basics to advanced techniques — for beginners and experienced users alike
   image:
     src: /logo.svg
     alt: Git Logo
@@ -23,21 +23,12 @@ features:
   - icon: 📚
     title: Comprehensive Documentation
     details: From basic commands to advanced techniques, covering everything you need to know about Git
-  - icon: 🎯
-    title: Beginner Friendly
-    details: Clear explanations with practical examples that make learning Git easy and intuitive
   - icon: ⚡
     title: Quick Reference
-    details: Fast access to common commands and workflows with our complete cheatsheet
+    details: Fast access to common commands and workflows with the complete cheatsheet
   - icon: 🚀
     title: Advanced Techniques
     details: Master rebasing, cherry-picking, bisecting, and other powerful Git features
-  - icon: 💡
-    title: Real-World Examples
-    details: Learn through practical scenarios that you'll encounter in your daily development
-  - icon: 🔧
-    title: Best Practices
-    details: Industry-standard workflows and tips to improve your Git workflow
 ---
 
 ## My Git Journey

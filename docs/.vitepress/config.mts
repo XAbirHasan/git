@@ -116,7 +116,7 @@ export default defineConfig({
 
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
-    ['meta', { name: 'theme-color', content: '#5f67ee' }],
+    ['meta', { name: 'theme-color', content: '#4f46e5' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:locale', content: 'en' }],
     ['meta', { property: 'og:title', content: 'Git Mastery Guide | Boost Your Productivity' }],
