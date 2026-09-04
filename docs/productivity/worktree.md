@@ -90,3 +90,27 @@ Removes a worktree you no longer need. The folder must be clean (no uncommitted 
 git worktree prune
 ```
 Cleans up leftover worktree metadata after you've deleted a worktree's folder manually instead of using `remove`.
+
+## Why Worktrees? Benefits & Pro Workflow
+
+Once worktrees are set up, they change how you handle day-to-day context switching — and they're especially useful if you work with AI coding agents.
+
+### Everyday Benefits
+
+- **No more stash juggling.** A hotfix, a code review, an urgent question — each gets its own folder on its own branch, and your in-progress work stays exactly as you left it.
+- **Keep long-running processes alive.** A dev server, a build, or a test watcher running against one branch doesn't need to be killed just because you want to look at another branch.
+- **Review a PR without disturbing your work.** Check out a colleague's branch into its own worktree, look through it, run it — your actual working branch never moves.
+- **Parallel builds and tests.** Since each worktree is a real checkout, you can run a full test suite on one branch while continuing to edit another.
+
+### Using Worktrees Like a Pro
+
+- **Name folders after branches.** Keeping `feature/login` as the folder name for the `feature/login` branch (as in the bare setup above) means you never have to guess what's checked out where.
+- **One editor window per worktree.** Open each worktree as its own editor window instead of switching branches inside a single window — your open tabs, breakpoints, and terminal state stay put per branch.
+- **Use throwaway worktrees for spikes.** `git worktree add -b spike/idea-name spike/idea-name main` gives you an isolated space to try something risky; if it doesn't pan out, `git worktree remove` it and the branch, no cleanup of your main working copy required.
+- **Prune after deleting branches.** Make `git worktree prune` a habit after you delete branches you were done with — stale worktree metadata otherwise lingers.
+
+### Agentic Workflow Benefit
+
+AI coding agents work by directly reading, editing, and running commands in a working directory. If you point one at the same folder you're actively coding in, its edits and yours end up mixed together in the same uncommitted diff — hard to review, hard to undo cleanly.
+
+Give an agent its own worktree instead. It gets a real, isolated checkout to work in — free to edit files, install dependencies, and run commands — while your own working copy stays untouched. When it's done, you review that worktree's diff on its own terms: merge it if it's good, or just `git worktree remove` the folder and delete the branch if it isn't. Running several agents on different tasks at once works the same way — one worktree per agent, each with its own branch, none of them stepping on each other.
