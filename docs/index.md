@@ -20,15 +20,21 @@ hero:
       link: /cheatsheet
 
 features:
-  - icon: 📚
+  - icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7Z"/></svg>'
     title: Comprehensive Documentation
     details: From basic commands to advanced techniques, covering everything you need to know about Git
-  - icon: ⚡
+    link: /guide/what-is-git
+    linkText: Start reading
+  - icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg>'
     title: Quick Reference
     details: Fast access to common commands and workflows with the complete cheatsheet
-  - icon: 🚀
+    link: /cheatsheet
+    linkText: Open cheatsheet
+  - icon: '<svg viewBox="0 0 24 24" fill="none"><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="7" y1="5" x2="7" y2="19"/><path d="M7 9c4 0 7 2 10 6"/></g><g fill="currentColor"><circle cx="7" cy="5" r="2"/><circle cx="7" cy="19" r="2"/><circle cx="18" cy="17" r="2"/></g></svg>'
     title: Advanced Techniques
     details: Master rebasing, cherry-picking, bisecting, and other powerful Git features
+    link: /commands/rebase
+    linkText: Explore commands
 ---
 
 ## My Git Journey

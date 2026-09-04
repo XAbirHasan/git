@@ -1,0 +1,54 @@
+/**
+ * Brand color, aligned to the orange used in the logo/favicon
+ * (default theme ships an unrelated indigo).
+ */
+:root {
+  --vp-c-brand-1: #c73018;
+  --vp-c-brand-2: #e2431f;
+  --vp-c-brand-3: #f0603c;
+  --vp-c-brand-soft: rgba(239, 74, 38, 0.14);
+}
+
+.dark {
+  --vp-c-brand-1: #ff9770;
+  --vp-c-brand-2: #ff7a4d;
+  --vp-c-brand-3: #ef4a26;
+  --vp-c-brand-soft: rgba(239, 74, 38, 0.16);
+}
+
+/**
+ * Home feature cards
+ */
+.VPFeature {
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.VPFeature:hover {
+  transform: translateY(-4px);
+  border-color: var(--vp-c-brand-1);
+  box-shadow: 0 16px 32px -18px rgba(239, 74, 38, 0.35);
+}
+
+.VPFeature .icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background-color: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  transition: transform 0.22s ease, background-color 0.22s ease;
+}
+
+.VPFeature .icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.VPFeature:hover .icon {
+  transform: scale(1.06);
+}
+
+.VPFeature .title {
+  font-size: 17px;
+}
