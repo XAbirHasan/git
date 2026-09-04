@@ -77,6 +77,7 @@ npm run docs:preview
 │   ├── commands/                # Command documentation
 │   ├── guide/                   # Getting started guides
 │   ├── tools/                   # Tools and techniques
+│   ├── productivity/            # Workflow & productivity guides
 │   ├── cheatsheet.md           # Complete command reference
 │   └── index.md                # Home page
 ├── .github/
@@ -136,6 +137,7 @@ Visit the [live documentation](https://xabirhasan.github.io/git/) for detailed g
 - [Git Rebase](https://xabirhasan.github.io/git/commands/rebase)
 - [Git Bisect](https://xabirhasan.github.io/git/commands/bisect)
 - [Git Reflog](https://xabirhasan.github.io/git/commands/reflog)
+- [Git Worktree](https://xabirhasan.github.io/git/productivity/worktree)
 
 ## Presentation Slides
 - � [Google Slides Presentation](https://docs.google.com/presentation/d/1m0p_X8EIhBhEi5-Qr8kFxBSDy3amSwcv/edit?usp=sharing&ouid=104311828414183489242&rtpof=true&sd=true)
