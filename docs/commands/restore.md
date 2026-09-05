@@ -1,45 +1,25 @@
 # Git Restore
 
-`git restore` is a modern Git command (introduced in Git 2.23) that provides a clear way to restore files in your working tree and staging area. It's the recommended alternative to `git checkout` and `git reset` for file operations.
+Before Git 2.23, `git checkout` did three unrelated jobs: switching branches, creating branches, and restoring files, which made it confusing to reason about. Git 2.23 split it in two: `git switch` for branches, `git restore` for files. If you just want to discard a change or unstage something, `restore` is the clearer, purpose-built tool for it.
 
-## Why Git Restore?
-
-Before Git 2.23, `git checkout` was used for:
-- Switching branches
-- Restoring files
-- Creating branches
-
-This was confusing! Git 2.23 introduced:
-- `git switch` - for switching/creating branches
-- `git restore` - for restoring files
-
-## Basic Restore Commands
-
-### Discard Changes in Working Directory
-
-Restore file to last committed state:
+## Discarding Changes
 
 ```bash
 git restore <file>
 ```
 
-**Example:**
 ```bash
-# Discard changes in file.txt
+# Discard changes in single file
 git restore file.txt
 
 # Discard changes in multiple files
 git restore file1.txt file2.txt
 
-# Discard all changes
+# Discard everything
 git restore .
 ```
 
-⚠️ **Warning:** This permanently discards uncommitted changes!
-
-### Before and After
-
-```bash
+```
 # Before
 $ git status
 Changes not staged for commit:
@@ -53,17 +33,23 @@ $ git status
 nothing to commit, working tree clean
 ```
 
-## Unstaging Files
+⚠️ This permanently discards uncommitted changes, there's no undo (more on recovering from a mistake below).
 
-### Unstage Staged Changes
+It also works for a file you deleted outright, not just edited, `restore` doesn't care how a tracked file changed, only that it did:
+```bash
+rm important.txt          # accidentally deleted
+git restore important.txt # brought back from the last commit
+```
+
+## Unstaging
 
 ```bash
 git restore --staged <file>
 ```
 
-This moves changes from staging area back to working directory without losing changes.
+Moves a file from staged back to modified, without losing the changes themselves, the opposite of `git add`.
 
-**Example:**
+
 ```bash
 # Stage a file
 $ git add file.txt
@@ -77,121 +63,54 @@ Changes not staged for commit:
         modified:   file.txt
 ```
 
-### Unstage All Files
-
 ```bash
-# Unstage everything
-git restore --staged .
-```
-
-### Unstage and Discard
-
-```bash
-# Unstage file
-git restore --staged file.txt
-
-# Then discard changes
-git restore file.txt
-
-# Or do both at once
-git restore --staged --worktree file.txt
-# or shorthand
+git restore --staged .                    # unstage everything
+git restore --staged --worktree file.txt  # unstage AND discard, in one step
+# or the shorthand
 git restore -SW file.txt
 ```
 
-## Advanced Restore Options
+## Working Tree vs. Staging Area
 
-### Restore from Specific Commit
+`restore` can target either half of a file's state independently, or both:
 
 ```bash
-# Restore file from specific commit
-git restore --source=<commit> <file>
-
-# Shorthand
-git restore -s <commit> <file>
+git restore --worktree <file>   # or -W, same as plain `git restore <file>`
+git restore --staged <file>     # or -S, unstage only
+git restore -SW <file>          # both: completely reverts the file to its last commit
 ```
 
-**Example:**
+## Restoring From a Specific Source
+
+By default, restore pulls from your last commit. Point it elsewhere with `--source`:
+
 ```bash
-# Restore from previous commit
-git restore --source=HEAD~1 file.txt
-
-# Restore from specific commit
-git restore --source=abc123 file.txt
-
-# Restore from different branch
-git restore --source=main file.txt
+git restore --source=HEAD~1 file.txt    # from the previous commit
+git restore --source=main file.txt      # from another branch
+git restore --source=abc123 file.txt    # from a specific commit
+git restore --source=stash@{0} file.txt # from a stash
+# shorthand: -s
 ```
 
-### Restore from Stash
+## Restoring by Pattern
 
 ```bash
-# Restore file from stash
-git restore --source=stash@{0} file.txt
-```
-
-### Restore Specific Paths
-
-```bash
-# Restore entire directory
-git restore src/
-
-# Restore by pattern
-git restore '*.js'
-
-# Restore all files with extension
-git restore **/*.css
-```
-
-## Working Tree and Staging Area
-
-### Working Tree Operations
-
-```bash
-# Restore working tree (default)
-git restore --worktree <file>
-# or shorthand
-git restore -W <file>
-
-# Same as
-git restore <file>
-```
-
-### Staging Area Operations
-
-```bash
-# Restore staging area only
-git restore --staged <file>
-# or shorthand
-git restore -S <file>
-```
-
-### Both Working Tree and Staging
-
-```bash
-# Restore both
-git restore --staged --worktree <file>
-# or shorthand
-git restore -SW <file>
-
-# This completely reverts file to last commit
+git restore src/          # a whole directory
+git restore '*.js'        # everything matching a pattern
+git restore **/*.css      # any depth
 ```
 
 ## Interactive Restore
 
-### Patch Mode
-
 ```bash
-# Interactively restore hunks
 git restore --patch <file>
 # or
 git restore -p <file>
 ```
 
-This lets you selectively discard changes chunk by chunk.
+Walks through the file's changes hunk by hunk, letting you discard some and keep others:
 
-**Example:**
-```bash
+```
 $ git restore -p file.txt
 diff --git a/file.txt b/file.txt
 index 1234567..abcdefg 100644
@@ -204,187 +123,36 @@ index 1234567..abcdefg 100644
 Discard this hunk from worktree [y,n,q,a,d,e,?]?
 ```
 
-**Options:**
 - `y` - discard this hunk
 - `n` - keep this hunk
 - `q` - quit
 - `a` - discard this and all remaining
-- `d` - keep this and all remaining  
+- `d` - keep this and all remaining
 - `e` - manually edit
 - `?` - help
 
-### Patch Unstaging
+Combine with `--staged` to unstage hunk by hunk instead: `git restore -Sp <file>`.
 
-```bash
-# Interactively unstage hunks
-git restore --staged --patch <file>
-# or
-git restore -Sp <file>
-```
+## Restore vs. Checkout vs. Reset
 
-## Common Workflows
-
-### Workflow 1: Undo Unwanted Changes
-
-```bash
-# Made mistake, discard changes
-git restore file.txt
-
-# Or discard all changes
-git restore .
-```
-
-### Workflow 2: Unstage Files
-
-```bash
-# Added too much
-git add .
-
-# Unstage specific file
-git restore --staged unwanted-file.txt
-
-# Commit only what you want
-git commit -m "Focused commit"
-```
-
-### Workflow 3: Get File from Another Branch
-
-```bash
-# Get version of file from main branch
-git restore --source=main config.js
-
-# Keep your current changes in other files
-```
-
-### Workflow 4: Restore Deleted File
-
-```bash
-# Accidentally deleted file
-rm important.txt
-
-# Restore it
-git restore important.txt
-```
-
-### Workflow 5: Partial File Restore
-
-```bash
-# Some changes are good, some bad
-git restore -p file.txt
-
-# Selectively discard bad changes
-```
-
-## Restore vs Other Commands
-
-### Restore vs Checkout
-
-**Old way (git checkout):**
+**Old way, `git checkout`:**
 ```bash
 git checkout -- file.txt
 git checkout HEAD file.txt
 ```
-
-**New way (git restore):**
+**New way, `git restore`:**
 ```bash
 git restore file.txt
 git restore --source=HEAD file.txt
 ```
 
-### Restore vs Reset
+**`git reset`** moves the branch pointer and can rewrite which commits exist, more powerful, more dangerous. **`git restore`** only ever touches files, never commits, which makes it the safer tool whenever a file is really all you're trying to fix.
 
-**git reset:**
-- Moves branch pointer
-- Can change commits
-- More powerful, more dangerous
-
-**git restore:**
-- Only affects files
-- Doesn't touch commits
-- Safer for file operations
-
-### When to Use Each
-
-**Use `git restore` when:**
-- Discarding file changes
-- Unstaging files
-- Getting file from different commit
-- Working with files only
-
-**Use `git reset` when:**
-- Moving branch pointer
-- Undoing commits
-- Changing commit history
-
-**Use `git checkout` (old) when:**
-- Switching branches (use `git switch` instead)
-- Creating branches (use `git switch -c` instead)
-
-## Examples by Scenario
-
-### Scenario 1: Discard All Changes
-
-```bash
-# Discard all unstaged changes
-git restore .
-```
-
-### Scenario 2: Unstage Everything
-
-```bash
-# Unstage all staged files
-git restore --staged .
-```
-
-### Scenario 3: Completely Revert File
-
-```bash
-# Revert file completely (staged + working)
-git restore -SW file.txt
-```
-
-### Scenario 4: Get File from Last Commit
-
-```bash
-# Restore file from HEAD
-git restore --source=HEAD file.txt
-```
-
-### Scenario 5: Get File from Previous Commit
-
-```bash
-# Restore from 3 commits ago
-git restore --source=HEAD~3 file.txt
-```
-
-### Scenario 6: Undo Git Add
-
-```bash
-# Staged file by mistake
-git add secret.env
-
-# Unstage it
-git restore --staged secret.env
-```
-
-### Scenario 7: Restore Directory
-
-```bash
-# Discard changes in entire directory
-git restore src/
-```
-
-### Scenario 8: Restore Multiple Files
-
-```bash
-# Restore specific files
-git restore file1.txt file2.js style.css
-```
+Use `restore` for discarding or unstaging file changes. Use `reset` for undoing commits or moving where a branch points. Use `switch` (not the old `checkout`) for changing branches.
 
 ## Safety and Recovery
 
-### Check Before Restoring
-
+Before restoring, it's worth a quick look at what you're about to lose:
 ```bash
 # See what will be discarded
 git diff file.txt
@@ -393,103 +161,26 @@ git diff file.txt
 git restore file.txt
 ```
 
-### Can't Undo Restore!
-
-⚠️ **Important:** `git restore` discards changes permanently. They **cannot** be recovered.
-
-**Best practice:**
+If you're not sure yet, stash instead of restoring, it's reversible:
 ```bash
-# Not sure? Create temporary commit first
 git stash
-
-# Or create temp branch
+# work on something else, decide later:
+git stash pop    # bring it back
+git stash drop   # or actually discard it
+```
+Or, if you want to keep working on the change but somewhere separate, stash it straight into its own branch:
+```bash
 git stash branch temp-safety
 ```
 
-### Recover After Accidental Restore
+**If you already restored by mistake:**
+- If the change was ever committed (even briefly), `git reflog` may help you find it.
+- If you'd stashed it, `git stash list` and `git stash pop` will bring it back.
+- Some editors keep their own local history independent of Git (VSCode's Local History extension, IntelliJ's built-in Local History) worth checking immediately.
 
-If you restored by mistake:
+Content that was never staged, ever, is genuinely gone once restored, Git never created an object for it, so there's nothing left to find. If the change had been staged at some point before you restored it (even briefly, before further edits), there's a slim, unreliable chance it's still sitting in `.git/objects` as a dangling blob, findable with `git fsck --lost-found` until Git eventually garbage-collects it, but don't count on this working, it's a last resort, not a safety net. This is exactly why the "check the diff first" habit matters more here than almost anywhere else in Git.
 
-1. **Check reflog** (for committed changes):
-```bash
-git reflog
-```
-
-2. **Check stash** (if you stashed):
-```bash
-git stash list
-git stash pop
-```
-
-3. **IDE recovery** (some IDEs have local history):
-- VSCode: Local History extension
-- IntelliJ: Local History built-in
-- Vim: undo files
-
-Unfortunately, **unstaged changes cannot be recovered** after restore!
-
-## Best Practices
-
-### 1. Review Before Restoring
-
-```bash
-# See what you're about to lose
-git diff file.txt
-
-# Then restore
-git restore file.txt
-```
-
-### 2. Use Patch Mode for Precision
-
-```bash
-# Selective restoration
-git restore -p file.txt
-```
-
-### 3. Stash If Unsure
-
-```bash
-# Not sure if you need changes?
-git stash
-
-# Work on something else
-
-# Decide later
-git stash pop  # or git stash drop
-```
-
-### 4. Commit Often
-
-```bash
-# Commit frequently to avoid losing work
-git add .
-git commit -m "WIP: work in progress"
-
-# Amend later if needed
-git commit --amend
-```
-
-### 5. Use Descriptive Sources
-
-```bash
-# Be explicit about source
-git restore --source=main file.txt
-
-# Not just
-git restore file.txt
-```
-
-## Configuration
-
-### Set Restore Defaults
-
-```bash
-# No special configuration needed
-# git restore works out of the box
-```
-
-### Aliases for Common Operations
+## Aliases Worth Setting Up
 
 ```bash
 # Discard changes
@@ -504,71 +195,31 @@ git config --global alias.revert-file 'restore -SW'
 
 ## Troubleshooting
 
-### Restore Doesn't Work
-
+**Pathspec error:**
 ```bash
 $ git restore file.txt
 error: pathspec 'file.txt' did not match any files
 ```
+Check the spelling and your current directory. If the file was never tracked, `restore` won't touch it, see below.
 
-**Solution:**
-- Check file exists
-- Check spelling
-- Check current directory
-- File might be untracked (use `git clean`)
-
-### Can't Restore Untracked File
-
+**Can't restore an untracked file:**
 ```bash
 $ git restore new-file.txt
 error: pathspec 'new-file.txt' did not match any file(s) known to git
 ```
+`git restore` only works on files Git already tracks. For a genuinely untracked file, just delete it directly (`rm new-file.txt`) or use `git clean -f`.
 
-**Solution:**
-- `git restore` only works on tracked files
-- For untracked files, just delete them: `rm new-file.txt`
-- Or use: `git clean -f`
-
-### Restore from Non-Existent Commit
-
+**Restoring from a bad commit reference:**
 ```bash
 $ git restore --source=wrong-commit file.txt
 fatal: Invalid object name 'wrong-commit'
 ```
-
-**Solution:**
-- Check commit exists: `git log`
-- Use correct commit SHA
-- Use HEAD~n for relative references
-
-## Summary
-
-Git restore is essential for:
-- ✅ Discarding unwanted changes
-- ✅ Unstaging files
-- ✅ Getting files from other commits
-- ✅ Cleaning up working directory
-- ✅ Managing staged/unstaged states
-
-**Key Commands:**
-- `git restore <file>` - Discard changes
-- `git restore --staged <file>` - Unstage
-- `git restore -SW <file>` - Complete revert
-- `git restore --source=<commit> <file>` - Get from commit
-- `git restore -p <file>` - Interactive restore
-
-**Key Takeaways:**
-- Modern alternative to `git checkout` for files
-- Clearer purpose than `git reset` for files
-- **Cannot recover** discarded unstaged changes
-- Always review before restoring
-- Use patch mode for precision
+Double-check the SHA with `git log`, or use a relative reference like `HEAD~2` instead.
 
 ## See Also
 
-- [Git Reset](./reset.md) - Reset commits and branches
-- [Git Checkout](./branch.md#switching-branches) - Switch branches (deprecated for files)
-- [Git Stash](./stash.md) - Temporarily save changes
-- [Git Diff](./diff.md) - View changes
-- [Git Add](./add.md) - Stage changes
-- [Git Status](./status.md) - Check repository status
+- [Git Reset](/commands/reset) - resetting commits and branches, not just files
+- [Git Branch](/commands/branch) - `git switch`, the modern replacement for `checkout`'s branch-switching half
+- [Git Stash](/commands/stash) - temporarily setting changes aside instead of discarding them
+- [Git Diff](/commands/diff) - reviewing changes before restoring
+- [Git Add](/commands/add) - staging, the opposite direction of unstaging

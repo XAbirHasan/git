@@ -1,62 +1,61 @@
 # Git Branching
-Branching is an essential feature in Git that allows developers to work on multiple features or bug fixes in parallel without affecting the main codebase. This guide will cover some of the most commonly used git branching commands and options that developers can use to manage their branches.
+
+Branches let you work on multiple features or bug fixes in parallel without any of them affecting the main codebase until you're ready to merge. This guide covers the commands you'll reach for most often to create, inspect, and clean up branches.
 
 ## Show Current Branch
 
 ```
 git branch --show-current
 ```
-This command shows the current branch you are on. This command is useful if you want to quickly check which branch you are working on.
 
-Example:
+Prints just the name of the branch you're on, nothing else. Useful in scripts, or when you've lost track of where you are.
+
 ```
 $ git branch --show-current
 master
 ```
-In this example, the current branch is master.
 
-## List of All Local Branch
+## List All Local Branches
+
 ```
 git branch
 // or
 git branch --list
 ```
-This command lists all the branches in your local repository. This command is useful if you want to see the branches that you have created or worked on.
 
-Example:
+Lists every branch in your local repository, with an asterisk (`*`) marking the one you're currently on.
+
 ```
 $ git branch
 * master
   feature-1
   feature-2
 ```
-In this example, the local repository has three branches "master", "feature-1", and "feature-2". The branch with an asterisk(*) is the current branch.
 
-## List All Remotes Branch
+## List All Remote Branches
+
 ```
 git branch --remotes
 ```
-This command lists all the branches in the remote repository. This command is useful if you want to see the branches that other collaborators have created or worked on.
 
-Example:
+Lists the branches that exist on the remote, including ones other collaborators created that you haven't checked out locally.
+
 ```
 $ git branch --remotes
 origin/master
 origin/feature-1
 origin/feature-2
 ```
-In this example, the remote repository has three branches origin/master, origin/feature-1, and origin/feature-2.
 
-## List Branch With Last Commit
+## List Branches With Last Commit
 
 ```
 git branch --verbose
 // or
 git branch -v
 ```
-This command lists all the branches along with the last commit. This command is useful if you want to see the branches along with the last commit.
 
-Example:
+Same branch list as above, but with each branch's most recent commit next to it, so you can tell how current (or stale) each one is without checking it out.
 
 ```
 $ git branch -v
@@ -65,127 +64,137 @@ $ git branch -v
   feature-2
 ```
 
-## See the branches that have been merged into the current branch
+## See Merged Branches
+
 ```
 git branch --merged
 ```
-This command will show all the branches that have been already merged into the current branch. This is useful to keep track of which branches have been completed and can be safely deleted.
 
-Example:
+Shows which branches have already been fully merged into your current branch, which is the safe list of branches you can delete without losing any work.
+
 ```
 $ git branch --merged
   develop
   feature-A
   * master
 ```
-In this example, the branches "develop" and "feature-A" have been already merged into the current branch master.
 
-## Create a new branch
+## Create a New Branch
 
 ```
 git branch "branch name"
 ```
-This command creates a new branch with the specified name, but does **not** switch to it — you stay on your current branch. To create a branch and switch to it in one step, use `git checkout -b "branch name"` or, on Git 2.23+, `git switch -c "branch name"`.
 
-Example:
+Creates a new branch with the given name, but does **not** switch to it, you stay on your current branch. To create a branch and switch to it in one step, use `git checkout -b "branch name"` or, on Git 2.23+, `git switch -c "branch name"`.
 
 ```
 $ git branch feature-B
 $ git checkout -b feature-C
 Switched to a new branch 'feature-C'
 ```
-In this example, `feature-B` was created but not checked out, while `feature-C` was created and switched to immediately.
+Here, `feature-B` was created but not checked out, while `feature-C` was created and switched to immediately.
 
-## Rename a branch
+## Rename a Branch
 
 ```
 git branch -m "the renamed branch"
 ```
-This command will rename the current branch to the specified name. This is useful when you need to change the name of a branch for better organization or clarity.
 
-Example:
+Renames the branch you're currently on. Useful for cleaning up a name that no longer describes what you're working on, without losing the branch's history.
 
 ```
 $ git branch -m feature-B-fix
 ```
-In this example, the branch "feature-B" was renamed to "feature-B-fix"
 
-## Delete a branch
+## Delete a Branch
+
 ```
 git branch --delete "branch name"
 ```
-This command will delete the specified branch. This is useful when a branch is no longer needed and can be safely removed.
 
-Example:
+Deletes the specified branch, but only if Git can confirm it's already been merged elsewhere, otherwise it refuses, to protect you from losing unmerged work.
+
 ```
 $ git branch --delete feature-A
 ```
-In this example, the branch "feature-A" was deleted.
 
-## Force delete a branch
+## Force Delete a Branch
 
 ```
 git branch --delete --force "branch name"
 // or
 git branch -D "branch name"
 ```
-This command will forcefully delete the specified branch. It is useful for deleting branches that have not been fully merged or for deleting branches that have unmerged changes.
 
-Example:
+Same as above, but skips the merge check. Use this when you're certain the branch's work is no longer needed, since Git won't warn you before discarding unmerged commits.
+
 ```
 $ git branch -D feature-branch
 ```
-In this example, the "feature-branch" is forcefully deleted.
 
-## Delete a remote branch:
+## Delete a Remote Branch
+
 ```
 git push origin --delete "branch name"
 ```
-This command will delete the specified branch from the remote repository. It is useful for cleaning up branches that are no longer needed on the remote.
 
-Example:
+Deleting a local branch only removes your copy of it, the remote still has its own. This pushes the deletion to the remote too, which is what you want once a feature branch has been merged and everyone's done with it.
+
 ```
 $ git push origin --delete old-feature-branch
 ```
-In this example, the "old-feature-branch" is deleted from the remote repository "origin".
 
-## Checkout to a specific branch:
+## Checkout to a Specific Branch
+
 ```
 git checkout "branch name"
 ```
-This command will switch to the specified branch. It is useful for switching between branches to work on different features or bug fixes.
 
-## Switch between recent two branches:
+Switches your working directory to the specified branch.
+
+## Switch Between the Two Most Recent Branches
+
 ```
 git checkout -
 ```
-This command will switch to the most recently checked out branch. It is useful for quickly switching between branches.
 
+Jumps back to whichever branch you were on before your current one, the same shorthand `cd -` uses for directories. Handy for bouncing between two branches without typing their names each time.
 
-## git switch (git 2.23 and onwards)
-### Create a branch:
+## git switch (Git 2.23 and onwards)
+
+Git 2.23 split `git checkout`'s two unrelated jobs, switching branches and restoring files, into two dedicated commands: `git switch` and `git restore`. `git switch` covers everything below and is generally clearer than the older `git checkout` for branch work.
+
+### Create a Branch
+
 ```
 git switch --create "branch name"
 ```
-This command is the same as `git checkout -b` and will create a new branch with the given name and switch to it.
 
-Example:
+Equivalent to `git checkout -b`: creates a new branch with the given name and switches to it immediately.
 
 ```
 $ git switch --create new-feature-branch
 ```
 
-### Checkout to a specific branch:
+### Checkout to a Specific Branch
+
 ```
 git switch "branch name"
 ```
-This command is the same as `git checkout` and will switch to the specified branch
 
-### Switch between recent two branches:
+Equivalent to `git checkout "branch name"`.
+
+### Switch Between the Two Most Recent Branches
+
 ```
 git switch -
 ```
-This command is the same as git checkout - and will switch to the most recently checked out branch.
 
-## Why should you use git branch?
-In summary, Git branches are an important aspect of version control, allowing developers to work on multiple features or bug fixes in parallel. The commands listed above provide various ways to manage branches, including creating new branches, switching between branches, and deleting branches that are no longer needed. The `git switch` command is a new addition to git and is similar to the existing `git branch` and `git checkout` commands. It is available in git version 2.23 and onwards.
+Equivalent to `git checkout -`.
+
+## See Also
+
+- [Git Merge](/commands/merge) - integrating a branch's changes
+- [Git Rebase](/commands/rebase) - replaying a branch onto a new base
+- [Git Restore](/commands/restore) - restoring files (the other half of the old `git checkout`)
+- [Git Stash](/commands/stash) - setting work aside before switching branches

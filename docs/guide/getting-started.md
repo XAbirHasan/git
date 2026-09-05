@@ -1,6 +1,6 @@
 # Getting Started with Git
 
-Welcome to your Git journey! This guide will help you get started with Git, from installation to your first commit.
+Welcome to your Git journey! This guide covers everything needed to go from a blank terminal to your first commit: installing Git, telling it who you are, and the handful of commands you'll use every day.
 
 ## Installation
 
@@ -153,11 +153,13 @@ git diff
 
 ```bash
 # Discard changes in a file
-git checkout -- filename.txt
+git restore filename.txt
 
 # Unstage a file
-git reset HEAD filename.txt
+git restore --staged filename.txt
 ```
+
+(You'll also see `git checkout -- filename.txt` and `git reset HEAD filename.txt` in older tutorials, they do the same thing, but `git restore` is the clearer, purpose-built command introduced in Git 2.23. See [Git Restore](/commands/restore) for the full picture.)
 
 ## Best Practices for Beginners
 
@@ -202,4 +204,4 @@ Now that you have the basics, explore:
 - [Working with Branches](/commands/branch)
 - [Complete Command Cheatsheet](/cheatsheet)
 
-Ready to dive deeper? Let's explore the powerful features of Git!
+From here, branching and merging are the next big step, see [Git Branch](/commands/branch) to start working on features without touching your main line of work.

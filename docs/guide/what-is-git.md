@@ -1,39 +1,36 @@
 # What is Git?
 
-Git is a powerful version control system that allows developers to keep track of the changes made to their code. It allows developers to collaborate on projects, revert to previous versions of the code, and branch out to experiment with new features without affecting the main codebase.
+Ever wished you could undo a mistake in your code, see exactly who changed a line and why, or try out a risky idea without any danger of breaking what already works? That's the problem Git was built to solve.
 
-## Understanding Git
+Git is a version control system: it records every change made to a set of files over time, so you always know what changed, when, and by whom. That history lets developers collaborate on the same project, revert to an earlier version when something breaks, and branch off to try out new ideas without putting the main codebase at risk.
 
-One of the most important aspects of Git is being able to check the status of your files, including which files have been modified, added, or deleted. Developers can use the `git status` command for that. Another important aspect of Git is being able to view the commit history, including when and who made the changes, and what changes were made. Developers can use the `git log` command for that.
+Unlike tools that keep one shared copy of a project on a server, Git is distributed: cloning a repository gives you its entire history, not a thin pointer to it. That's what makes branching, offline work, and recovering from mistakes so cheap in Git compared to older version control systems.
 
-## Why Git Matters
+## Checking where you stand
 
-Git is widely used in software development and has become an industry standard for managing source code. It's also widely used in data science and machine learning projects.
+Two commands answer most day-to-day questions about a repository:
 
-### Software Development Example
+- `git status` shows what's changed in your working copy right now: modified files, staged files, untracked files.
+- `git log` shows what happened before now: the full history of commits, their authors, and their messages.
 
-For example, a software development team is working on a project. Each member of the team can clone the repository, make changes to their local copies, and push those changes back to the central repository. This allows the team to work on the project simultaneously without conflicts. Git also allows team members to easily revert to previous versions of the code or branch off to experiment with new features without affecting the main codebase.
+Everything else in Git builds on top of these two views: you check what changed, decide what to do about it, and the history in `git log` records the result.
 
-### Data Science Example
+## How teams actually use it
 
-In data science, git is useful for versioning the data, code and experiments. For example, as a data scientist, you could use git to version control your Jupyter notebooks and Python scripts, as well as the data you're using for your analysis. This allows you to easily reproduce your results and collaborate with other data scientists on the same project. You can also use git to version control your machine learning models and experiment with different versions of your model.
+**Software development.** Each person on a team clones the repository, makes changes on their own copy, and pushes them back. Everyone can work at the same time without conflicts, and if a feature turns out to be a bad idea, the team can revert to the commit before it was introduced instead of hand-undoing the damage.
 
-## Key Benefits
+**Data science.** The same model works for Jupyter notebooks, Python scripts, and even datasets: version them alongside the code that produces them, and you can reproduce a past result exactly, compare two versions of a model, or roll back a notebook to before an experiment went wrong.
 
-- **Version Control**: Track every change made to your code
-- **Collaboration**: Work with team members without stepping on each other's changes
-- **Branching**: Experiment without affecting the main codebase
-- **History**: View complete project history and who made what changes
-- **Backup**: Distributed nature means every clone is a full backup
-- **Revert**: Easily return to previous versions when needed
+## Why it matters
 
-## Summary
+- **Full history, always recoverable.** Every commit is permanent, so you can see who changed what and why, and revert to any earlier state whenever you need to.
+- **Every clone is a full backup.** There's no single point of failure. If the server hosting your repository disappears, any clone can restore it completely.
+- **Branches are cheap.** Creating one just adds a pointer to a commit, so trying out a risky idea costs nothing and never touches the main line of work until you choose to merge it.
+- **Collaboration without exclusive locks.** Everyone works on their own copy and reconciles by pushing and pulling, instead of needing sole access to shared files.
 
-In summary, Git is a powerful version control system that is widely used in software development and data science to manage source code and other files. It allows developers and data scientists to collaborate on projects, revert to previous versions of the code, and branch out to experiment with new features without affecting the main codebase.
+## Next steps
 
-## Next Steps
-
-Ready to dive in? Check out our:
-- [Git Status Guide](/commands/status) - Learn how to check your repository status
-- [Git Commit Guide](/commands/commit) - Master the art of committing changes
-- [Complete Cheatsheet](/cheatsheet) - Quick reference for all commands
+- [Getting Started](/guide/getting-started) - install Git and make your first commit
+- [Git Status](/commands/status) - the full `git status` reference
+- [Git Log](/commands/log) - the full `git log` reference
+- [Complete Cheatsheet](/cheatsheet) - quick reference for all commands

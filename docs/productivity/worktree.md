@@ -58,8 +58,23 @@ Now add a worktree for each branch you want checked out:
 
 ```
 git worktree add main
-git worktree add feature/login
 ```
+
+Git only looks at the last part of the path to guess a branch name, not the whole path. So `git worktree add feature/login` looks for a branch called `login`, not `feature/login`. Since `login` doesn't exist, Git creates it, and your real `feature/login` branch is left alone. Once a branch name has a slash in it, this shortcut can't find it. Give the branch explicitly instead:
+
+```bash
+# git worktree add <path> <branch>
+git worktree add feature/login feature/login
+```
+
+This is also safer in general: with the branch spelled out, Git checks out an existing branch or fails, it never creates one by accident.
+
+```
+$ git worktree add somepath totally-made-up-branch
+fatal: invalid reference: totally-made-up-branch
+```
+
+One thing to know for this setup: if a teammate pushes `feature/login` after you've already cloned, it won't be a local branch yet, just `origin/feature/login`. The same command still works, Git finds the matching remote branch and sets up tracking for you automatically.
 
 Your project folder ends up looking like this:
 
@@ -114,3 +129,10 @@ Once worktrees are set up, they change how you handle day-to-day context switchi
 AI coding agents work by directly reading, editing, and running commands in a working directory. If you point one at the same folder you're actively coding in, its edits and yours end up mixed together in the same uncommitted diff, making it hard to review and hard to undo cleanly.
 
 Give an agent its own worktree instead. It gets a real, isolated checkout to work in, free to edit files, install dependencies, and run commands, while your own working copy stays untouched. When it's done, you review that worktree's diff on its own terms: merge it if it's good, or just `git worktree remove` the folder and delete the branch if it isn't. Running several agents on different tasks at once works the same way: one worktree per agent, each with its own branch, none of them stepping on each other.
+
+## See Also
+
+- [Git Branch](/commands/branch) - the branches each worktree checks out
+- [Git Stash](/commands/stash) - the lighter-weight tool worktree replaces for quick detours
+- [Git Clone](/commands/clone) - `--bare`, the foundation of the recommended setup above
+

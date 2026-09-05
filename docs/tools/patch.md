@@ -1,5 +1,7 @@
 # Patch: what & why?
 
+Ever needed to hand someone a change without giving them access to your whole repository, or apply someone else's fix without them opening a PR? That's what a patch is for. 
+
 A patch is a file describing the changes made to one or more files, in the standard `diff` format: which lines were added, removed, or modified, and where. Use it to share changes without handing over your whole codebase, or to apply someone else's changes to your own copy.
 
 Patches can conflict with the target code, especially when applying them to a different version of the codebase than they were generated against. Check with `git apply --check` before applying for real (see below).
@@ -24,7 +26,7 @@ Add `--staged` (or the equivalent `--cached`) to include only what's staged with
 
 ```
 git diff --staged > fileName.patch
-// or
+# or
 git diff --cached > fileName.patch
 ```
 
@@ -46,7 +48,7 @@ git apply main.c.patch
 
 ## Patch from the last n commits
 
-`git format-patch -n <sha>` writes one patch file per commit, starting from `<sha>`. Use it over plain `git diff` when you want to preserve commit boundaries, authors, and messages, for example to email a series of patches or hand off a reviewable commit history.
+`git format-patch -n <sha>` writes one patch file per commit, counting `n` commits backward from `<sha>` (so `<sha>` is the newest commit included, not the oldest). Use it over plain `git diff` when you want to preserve commit boundaries, authors, and messages, for example to email a series of patches or hand off a reviewable commit history.
 
 ```
 git format-patch -3 HEAD
@@ -92,14 +94,22 @@ git apply --check main.c.patch
 
 ## Inspect a patch
 
-`git show` prints a patch file's changes, author, and commit message:
+A patch file is plain text, so the most direct way to read one is just to open it:
 
 ```
-git show fileName.patch
+cat fileName.patch
+```
+
+If it came from `format-patch`, the author, date, and commit message are already right there at the top of the file as plain text, no git command needed to extract them.
+
+To preview the effect without opening the file or applying it, `git apply --stat` gives you a diffstat summary:
+
+```
+git apply --stat fileName.patch
 ```
 
 ```
-git show main.c.patch
+git apply --stat main.c.patch
 ```
 
 ## Patch for specific files
@@ -153,3 +163,10 @@ git diff abc123 def456 -- main.c main.h > changes.patch
 ## Notes
 
 Test patches, especially cross-commit or cross-branch ones, with `git apply --check` before applying them for real: conflicts are easy to hit when the target code has diverged.
+
+## See Also
+
+- [Git Diff](/commands/diff) - the format patches are built from
+- [Git Commit](/commands/commit) - what `git am` creates for each patch
+- [Git Cherry-Pick](/commands/cherry-pick) - applying a specific commit directly, when both repos share history
+- [Git Log](/commands/log) - finding the commits a patch should cover

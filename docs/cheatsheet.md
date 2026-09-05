@@ -20,7 +20,7 @@ git clone -b branch-name <url>
 ```
 
 ## Checking Status of Your Files
-  
+
 ### View File Status
 ```bash
 git status
@@ -120,7 +120,7 @@ git commit -m "Headline" -m "details"
 ### Re-use Commit Message from Another Commit
 ```bash
 git commit --reuse-message=<commit-sha>
-# or 
+# or
 git commit -C <commit-sha>
 ```
 
@@ -335,8 +335,6 @@ git restore --source=main file.txt
 git restore -p file.txt
 ```
 
-
-
 ## Git Branching
 
 ### Show Current Branch
@@ -429,6 +427,34 @@ git switch "branch name"
 git switch -
 ```
 
+## Git Worktree
+
+### Check Out an Existing Branch Into Its Own Folder
+```bash
+git worktree add <path> <branch>
+```
+
+### Create a New Branch in a New Worktree
+```bash
+git worktree add -b <new-branch> <path> <base-branch>
+```
+
+### List Worktrees
+```bash
+git worktree list
+```
+
+### Remove a Worktree
+```bash
+git worktree remove <path>
+```
+
+### Clean Up After Manually Deleting a Worktree Folder
+```bash
+git worktree prune
+```
+See [Git Worktree](/productivity/worktree) for the recommended bare-repo setup and a branch-naming gotcha worth knowing about.
+
 ## Git Tags
 
 Git supports two types of tags: 1. lightweight tag, 2. annotated tag
@@ -436,7 +462,7 @@ Git supports two types of tags: 1. lightweight tag, 2. annotated tag
 ### Add a Lightweight Tag
 ```bash
 git tag "tag name"
-``` 
+```
 
 ### Add an Annotated Tag
 ```bash
@@ -448,7 +474,7 @@ git tag -a "tag name"
 ### Add Tag to a Specific Commit
 ```bash
 git tag --annotate "tag name" <commit-sha>
-``` 
+```
 
 ### Push Tags to Origin
 ```bash
@@ -457,7 +483,7 @@ git push origin 'tag name'
 
 ### Push All Tags at Once
 ```bash
-git push origin --tags 
+git push origin --tags
 ```
 
 ### List All Tags
@@ -674,8 +700,7 @@ git bisect start
 git bisect good sha-of-good-commit
 git bisect bad sha-of-bad-commit
 ```
-If bad commit is not provided, default is the last commit.
-Then **Test** your application and provide info about which state is good and which state is bad.
+Bad commit defaults to the last commit if omitted. Test each commit Git checks out, then mark it:
 
 ### Specify Good State
 ```bash
@@ -693,7 +718,7 @@ git bisect reset
 ```
 
 ## Reflog (Insurance in Git)
-  
+
 ### View Reference Logs
 ```bash
 git reflog
@@ -724,55 +749,27 @@ git config --unset gc.reflogExpire
 gitk --all `git reflog | cut -c1-7`
 ```
 
-### Recover Deleted Commit
-
-Delete or reset your last commit (mostly used: `git reset --hard HEAD~1`)
-
-To get back to previous state:
+### Undo the Last `reset --hard`
 ```bash
 git reset --hard HEAD@{1}
 ```
 
-If you made any commit after deleting or want to get back an old deleted commit:
-
-1. List the reflog history:
-```bash
-git reflog
-```
-
-2. Find your commit from the reflog history
-
-3. Add commit using git cherry-pick command:
+### Recover an Older Deleted Commit
+Find it in `git reflog`, then:
 ```bash
 git cherry-pick <commit-sha | @HEAD{number}>
 ```
 
-You can also copy commit message from the reflog:
+### Reuse a Recovered Commit's Message
 ```bash
 git commit --reuse-message=<commit-sha | @HEAD{number}>
-# or 
-git commit -C <commit-sha | @HEAD{number}>
+# or -C, same thing
+git commit --reedit-message=<commit-sha | @HEAD{number}>
+# or -c, opens editor first
 ```
 
-Copy commit message from the reflog and enable editing:
-```bash
-git commit --reedit-message=<commit-sha | @HEAD{number}> 
-# or 
-git commit -c <commit-sha | @HEAD{number}>
-```
-
-### Recover Deleted Branch
-
-If you delete your old branch or accidentally delete any branch:
-
-1. List the reflog history:
-```bash
-git reflog
-```
-
-2. Find your last commit on your deleted branch
-
-3. Checkout to your branch:
+### Recover a Deleted Branch
+Find its last commit in `git reflog`, then:
 ```bash
 git checkout -b "branch-name" <commit-sha | @HEAD{number}>
 ```
@@ -781,13 +778,13 @@ git checkout -b "branch-name" <commit-sha | @HEAD{number}>
 
 ⚠️ Ensure that you are doing what you are supposed to do.
 
-#### Clean Old or Unapproachable Reflog Entries
+#### Force-Expire Entries Immediately
 ```bash
-git reflog expire
+git reflog expire --expire=now --all
 ```
 
-#### Delete Reflog Entries
+#### Delete a Specific Reflog Entry
 ```bash
-git reflog delete  
+git reflog delete HEAD@{2}
 ```
-💣 This command causes data loss (use this at your own risk!)
+💣 Both cause permanent, unrecoverable data loss (use at your own risk!)

@@ -1,23 +1,13 @@
 # Git Add
 
-`git add` stages changes for your next commit. It's one of the most frequently used Git commands and the bridge between your working directory and the Git repository.
+`git add` moves changes from your working directory into the staging area (the "index"), which is where you assemble exactly what your next commit will contain. Nothing you edit becomes part of history until it passes through here, which is what lets you commit part of a change while leaving the rest for later.
 
-## Understanding Git Add
-
-Git add moves changes from:
-- **Working Directory** → **Staging Area (Index)**
-
-The staging area lets you prepare a commit by selectively choosing what changes to include.
-
-## Basic Add Commands
-
-### Add Specific File
+## Adding Files
 
 ```bash
 git add <file>
 ```
 
-**Example:**
 ```bash
 # Add single file
 git add README.md
@@ -26,7 +16,7 @@ git add README.md
 git add file1.txt file2.txt file3.txt
 ```
 
-### Add All Changes
+To stage everything at once:
 
 ```bash
 # Add all changes in current directory and subdirectories
@@ -34,27 +24,36 @@ git add .
 
 # Add all changes in entire repository
 git add --all
-
-# Shorthand
+# or, the shorthand
 git add -A
 ```
 
-### Add by Pattern
+These aren't quite the same: `git add .` stages changes in the current directory and below, while `-A`/`--all` stages changes across the entire repository regardless of where you run it from. If you're at the repo root they behave identically; if you're in a subdirectory, `.` won't touch changes elsewhere.
+
+**Deletions and renames** stage the same way as any other change:
+```bash
+git add deleted-file.txt   # stages the deletion
+# or, more explicit about intent
+git rm deleted-file.txt
+
+git mv old-name.txt new-name.txt   # renames and stages it in one step
+```
+Git detects renames automatically by comparing content, so `git add old-name.txt new-name.txt` after a manual rename works too, `git mv` is just a shortcut for the same result.
+
+You can also add by pattern:
 
 ```bash
-# Add all JavaScript files
+# All JavaScript files in the current directory
 git add *.js
 
-# Add all files in directory
+# Everything in a directory
 git add src/
 
-# Add all txt files in any directory
+# All .txt files, any depth
 git add **/*.txt
 ```
 
-## Interactive Adding
-
-### Interactive Mode
+## Interactive and Patch Modes
 
 ```bash
 git add --interactive
@@ -62,10 +61,9 @@ git add --interactive
 git add -i
 ```
 
-This opens an interactive menu with options to stage changes selectively.
+Opens a menu for staging changes selectively, one file or hunk at a time, instead of specifying paths on the command line:
 
-**Example:**
-```bash
+```
 $ git add -i
            staged     unstaged path
   1:    unchanged        +4/-2 file1.txt
@@ -77,7 +75,7 @@ $ git add -i
 What now>
 ```
 
-### Patch Mode (Most Useful!)
+The most useful mode within it, `patch`, has its own direct flag:
 
 ```bash
 git add --patch
@@ -85,10 +83,9 @@ git add --patch
 git add -p
 ```
 
-This lets you stage changes **hunk by hunk** (chunk by chunk).
+This walks you through your changes hunk by hunk (a hunk being one contiguous block of changed lines), asking what to do with each:
 
-**Example:**
-```bash
+```
 $ git add -p
 diff --git a/file.txt b/file.txt
 index 1234567..abcdefg 100644
@@ -102,173 +99,90 @@ index 1234567..abcdefg 100644
 Stage this hunk [y,n,q,a,d,s,e,?]?
 ```
 
-**Options:**
 - `y` - stage this hunk
 - `n` - don't stage this hunk
-- `q` - quit (don't stage this or remaining)
+- `q` - quit, staging nothing else
 - `a` - stage this and all remaining hunks
-- `d` - don't stage this or any remaining hunks
-- `s` - split into smaller hunks
+- `d` - stage neither this nor any remaining hunks
+- `s` - split this hunk into smaller ones
 - `e` - manually edit the hunk
-- `?` - help
+- `?` - show this help
 
-**Why use patch mode?**
-- Stage only relevant changes
-- Create focused commits
-- Review changes before staging
-- Separate unrelated changes
-
-### Patch Specific File
+Patch mode is what makes atomic commits possible when a file has two unrelated changes mixed together: you can stage just the one that belongs in this commit and leave the other for later, without touching the file itself. It works on a specific file too:
 
 ```bash
-# Interactive staging for specific file
 git add -p file.txt
 ```
 
-## Advanced Add Options
-
-### Add Modified and Deleted Files Only
+## Selective Staging
 
 ```bash
-# Don't add new (untracked) files
+# Stage only files that already existed (skip new/untracked files)
 git add -u
-
 # or
 git add --update
 ```
 
-**Example:**
-```bash
-# Only stages modified and deleted files, ignores new files
-$ git add -u
-```
-
-### Add with Intent
+Useful when you've made a batch of edits across the repo but don't want to accidentally stage a scratch file you created alongside them.
 
 ```bash
-# Mark untracked file for tracking without staging content
+# Track a new file without staging its contents yet
 git add --intent-to-add <file>
 # or
 git add -N <file>
 ```
 
-**Use case:** See diff of untracked files before staging.
+Normally `git diff` shows nothing for an untracked file, there's no previous version to compare against. `-N` tells Git "this file will exist" without staging its content, which makes `git diff` treat it as an empty file being modified, so you can review a new file's contents like any other change before committing it.
 
-**Example:**
 ```bash
-# Add intent to track new file
-git add -N newfile.txt
-
-# Now you can see diff
-git diff newfile.txt
+git add -N newfile.txt   # mark it as tracked, without staging content
+git diff newfile.txt     # now shows the whole file as an addition
 ```
 
-### Force Add Ignored Files
-
 ```bash
-# Add file even if it's in .gitignore
-git add --force <file>
-# or
-git add -f <file>
-```
-
-**Example:**
-```bash
-# Add file listed in .gitignore
-git add -f config/secret.env
-```
-
-⚠️ **Warning:** Be careful adding ignored files!
-
-### Dry Run
-
-```bash
-# Show what would be added without actually adding
 git add --dry-run .
 # or
 git add -n .
 ```
 
-**Example:**
+Shows what would be staged without actually staging it, useful for double-checking a broad pattern like `git add .` before committing to it.
+
 ```bash
-$ git add -n .
-add 'file1.txt'
-add 'file2.txt'
-add 'src/app.js'
+# Add a file even though .gitignore excludes it
+git add --force <file>
+# or
+git add -f <file>
 ```
 
-### Verbose Add
+```bash
+git add -f config/secret.env   # forces a normally-ignored file in
+```
+
+⚠️ Only do this when you're certain the file belongs in version control. `.gitignore` usually excludes a file for a reason (build artifacts, secrets, local config), and forcing it in defeats that on purpose.
 
 ```bash
-# Show files being added
 git add --verbose .
 # or
 git add -v .
 ```
 
-## What to Add
-
-### Add Modified Files
-
-Files that already exist and have been changed:
-
-```bash
-git add modified-file.txt
-```
-
-### Add New Files
-
-Files that are untracked:
-
-```bash
-git add new-file.txt
-```
-
-### Add Deleted Files
-
-Files that you've deleted:
-
-```bash
-# Mark deletion for staging
-git add deleted-file.txt
-
-# Or use git rm
-git rm deleted-file.txt
-```
-
-### Add Renamed Files
-
-Git usually detects renames automatically:
-
-```bash
-# After renaming (Git detects it)
-git add old-name.txt new-name.txt
-
-# Or use git mv
-git mv old-name.txt new-name.txt
-```
+Same as a normal add, but prints each file as it's staged, useful when a wildcard pattern makes it unclear exactly what got picked up.
 
 ## Checking What's Staged
 
-### See Staged Changes
-
 ```bash
-# Show what's staged
 git diff --staged
-
 # or
 git diff --cached
 ```
 
-### See Status
+Shows exactly what will be in your next commit, as opposed to plain `git diff`, which shows unstaged changes. Get in the habit of running this right before committing.
 
 ```bash
-# Check what's staged and unstaged
 git status
 ```
 
-**Example:**
-```bash
+```
 $ git status
 On branch main
 Changes to be committed:
@@ -281,313 +195,81 @@ Changes not staged for commit:
         modified:   file3.txt
 ```
 
-## Common Workflows
-
-### Workflow 1: Add Everything
+## Unstaging Files
 
 ```bash
-# Stage all changes
-git add .
+git restore --staged <file>
+# or, the pre-2.23 way
+git reset HEAD <file>
 
-# Commit
+# unstage everything
+git restore --staged .
+```
+
+This moves a file back from staged to modified without discarding its changes, the opposite direction of `git add`. See [Git Restore](/commands/restore) for the full picture.
+
+## Common Workflows
+
+**Stage everything, quickly:**
+```bash
+git add .
 git commit -m "Your message"
 ```
 
-### Workflow 2: Selective Staging
-
+**Selective staging, for a focused commit:**
 ```bash
-# Stage specific files
 git add file1.txt file2.txt
-
-# Check what's staged
 git status
-
-# Commit
 git commit -m "Update files 1 and 2"
 ```
 
-### Workflow 3: Interactive Staging
-
+**Interactive/patch staging, for mixed changes:**
 ```bash
-# Interactive mode
-git add -i
-
-# Or patch mode for granular control
 git add -p
-
-# Review staged changes
 git diff --staged
-
-# Commit
 git commit -m "Carefully staged changes"
-```
-
-### Workflow 4: Stage Modified Only
-
-```bash
-# Stage only modified files (not new files)
-git add -u
-
-# Commit
-git commit -m "Update existing files"
-```
-
-### Workflow 5: Review Before Adding
-
-```bash
-# See what changed
-git diff
-
-# Add specific changes
-git add -p
-
-# Verify what's staged
-git diff --staged
-
-# Commit
-git commit -m "Reviewed changes"
-```
-
-## Unstaging Files
-
-### Unstage File
-
-```bash
-# Modern way (Git 2.23+)
-git restore --staged <file>
-
-# Traditional way
-git reset HEAD <file>
-
-# Unstage everything
-git restore --staged .
-# or
-git reset HEAD
-```
-
-**Example:**
-```bash
-# Unstage specific file
-git restore --staged README.md
-
-# Check status
-git status
-```
-
-## Best Practices
-
-### 1. Review Before Adding
-
-```bash
-# Always check what changed
-git diff
-
-# Then add
-git add file.txt
-```
-
-### 2. Use Patch Mode for Mixed Changes
-
-```bash
-# When file has unrelated changes
-git add -p file.txt
-```
-
-### 3. Make Atomic Commits
-
-```bash
-# Stage related changes together
-git add feature1.js feature1.test.js
-git commit -m "Add feature 1"
-
-git add feature2.js feature2.test.js
-git commit -m "Add feature 2"
-```
-
-### 4. Check Status Frequently
-
-```bash
-# Before adding
-git status
-
-# After adding
-git status
-
-# Before committing
-git status
-```
-
-### 5. Use Meaningful Stages
-
-Don't just `git add .` mindlessly. Stage changes that belong together.
-
-## Common Patterns
-
-### Add All Modified and New Files
-
-```bash
-git add -A
-# or
-git add --all
-```
-
-### Add All Files in Directory
-
-```bash
-git add src/
-```
-
-### Add Files by Extension
-
-```bash
-# Add all JS files
-git add *.js
-
-# Add all CSS files in any directory
-git add **/*.css
-```
-
-### Add Multiple Specific Files
-
-```bash
-git add file1.txt file2.js src/app.css
 ```
 
 ## Troubleshooting
 
-### Nothing to Add
-
-```bash
-$ git add .
-# No output (nothing staged)
+**Nothing seems to get staged:**
 ```
+$ git add .
+# no output
+```
+Check `git status` to confirm there really are changes, and that you're in the right directory. `git add` succeeding silently is normal, no output means it worked.
 
-**Solution:**
-- Check if files changed: `git status`
-- Make sure you're in the right directory
-- Check if files are already staged
-
-### File Not Staged
-
-```bash
+**Pathspec error:**
+```
 $ git add file.txt
 fatal: pathspec 'file.txt' did not match any files
 ```
+Check the spelling and your current directory (`ls file.txt`). It might also be excluded by `.gitignore`.
 
-**Solution:**
-- Check file exists: `ls file.txt`
-- Check spelling
-- Check you're in correct directory
-- File might be in .gitignore
-
-### Added Wrong Files
-
-```bash
-# Unstage everything
-git restore --staged .
-
-# Or unstage specific file
-git restore --staged wrong-file.txt
-
-# Re-add correct files
-git add correct-file.txt
+**File is ignored:**
 ```
-
-### Can't Add Ignored File
-
-```bash
 $ git add config.env
 The following paths are ignored by one of your .gitignore files:
 config.env
 ```
+Either it genuinely shouldn't be tracked, or `.gitignore` is too broad. Use `git add -f config.env` only if you're sure.
 
-**Solution:**
-```bash
-# Force add if really needed
-git add -f config.env
-
-# Or remove from .gitignore
-```
-
-## Git Add vs Git Commit
-
-### Add Then Commit (Normal Way)
+## Git Add vs. `commit -am`
 
 ```bash
-# Stage changes
+# Add, then commit
 git add file.txt
-
-# Commit staged changes
 git commit -m "Update file"
-```
 
-### Commit with Auto-Add
-
-```bash
 # Add and commit modified files in one step
 git commit -am "Update file"
 ```
 
-⚠️ **Note:** This only works for **modified** files, not new files!
-
-## Understanding the Staging Area
-
-### Why Stage?
-
-1. **Review changes** before committing
-2. **Selective commits** - choose what to include
-3. **Atomic commits** - group related changes
-4. **Flexibility** - stage parts of files
-
-### Three States of Files
-
-1. **Modified** - changed but not staged
-2. **Staged** - marked for next commit
-3. **Committed** - stored in repository
-
-## Configuration
-
-### Set Default Behavior
-
-```bash
-# Auto-stage deleted files
-git config --global add.ignoreRemoval false
-```
-
-### Ignore Whitespace
-
-```bash
-# Ignore whitespace changes when adding
-git config --global apply.whitespace nowarn
-```
-
-## Summary
-
-Git add is essential for:
-- ✅ Staging changes for commits
-- ✅ Selective change management
-- ✅ Creating focused commits
-- ✅ Reviewing changes before committing
-- ✅ Building commit history
-
-**Key Commands:**
-- `git add <file>` - Stage specific file
-- `git add .` - Stage all changes
-- `git add -p` - Interactive patch mode
-- `git add -u` - Stage modified only
-- `git add -A` - Stage everything
-
-**Key Takeaways:**
-- Always review before adding (`git diff`)
-- Use patch mode for granular control
-- Stage related changes together
-- Check status frequently
-- Unstage with `git restore --staged`
+`-am` is a shortcut, but only for files Git is already tracking. It won't pick up new, untracked files, so if your change includes a new file, you still need `git add` for that one explicitly.
 
 ## See Also
 
-- [Git Commit](./commit.md) - Committing changes
-- [Git Status](./status.md) - Checking status
-- [Git Diff](./diff.md) - Viewing changes
-- [Git Restore](./restore.md) - Restoring files
-- [Git Reset](./reset.md) - Resetting changes
+- [Git Commit](/commands/commit) - committing what you've staged
+- [Git Status](/commands/status) - checking what's staged and what isn't
+- [Git Diff](/commands/diff) - viewing changes before and after staging
+- [Git Restore](/commands/restore) - unstaging and discarding changes

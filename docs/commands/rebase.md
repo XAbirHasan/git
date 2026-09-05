@@ -1,76 +1,104 @@
 # Rebase
-Rebasing is an important concept in Git that allows you to reorganize the commit history of a branch. This helps you to streamline the branch history and make it more readable. The rebase command is used to change the base branch of your branch head. You can also use it to update your branch history, modify specific commits, or even squash multiple commits into one.
+
+Rebasing replays your branch's commits on top of a different base commit, one at a time. It's like redoing your work as if you'd started from that new point. The result is a clean, linear history instead of merge's tangle of merge commits, plus a chance to edit or squash commits along the way.
+
+You'll use it in two common situations:
+
+- **Catching up with `main`.** You branched off `main` a few days ago. Since then, your team added new commits to `main`. Merging would tangle a merge commit into your history. Rebasing replays your commits on top of the latest `main` instead, so it looks like you started fresh today.
+- **Cleaning up before a PR.** A feature branch often ends up with messy commits: "wip", "fix typo", "actually fix it this time". An interactive rebase lets you squash these into a few clean commits before anyone reviews your branch.
+
+Both do the same thing under the hood: rewrite your branch's history. The first keeps you in sync with your team. The second makes your own work easier to read.
 
 ## Rebase Your Branch Head
-The first use of the rebase command is to rebase your branch head. To do this, you need to specify the parent branch that you want to rebase to. Here's the syntax:
+
 ```bash
 git rebase PARENT_BRANCH
 ```
-For example, if you have a branch named `feature-branch` that is based on the `master` branch, you can rebase the head of the feature-branch to the master branch with the following command:
+
+Moves your branch so it starts from the current tip of `PARENT_BRANCH` instead of wherever it originally branched off. For example, if `feature-branch` was created off an older commit on `master`, rebasing it brings it up to date with everything `master` has gained since:
 
 ```
 git rebase master
 ```
-This will update the branch head of `feature-branch` to the latest commit of the `master` branch.
 
 ## Interactive Rebase
-The next use of the rebase command is the interactive rebase. This allows you to change specific commits or update your branch history. To do this, you need to specify the parent of the commit that you want to start the interactive rebase with. Here's the syntax:
 
 ```bash
 git rebase --interactive COMMIT_SHA^
 ```
-Here, `COMMIT_SHA` is the commit reference you want to start the rebase from, and `^`(caret) means parent to that commit. 
 
-For example, if you want to start an interactive rebase on the parent of the commit with the SHA `ea5972f`, you can run the following command:
+Regular rebase just replays your commits onto a new base. Interactive rebase lets you reshape them on the way there: reorder them, edit one, merge several into one, or drop one entirely. It's how you turn a messy trail of "wip" and "fix typo" commits into a handful of clean ones before opening a PR.
+
+`COMMIT_SHA^` tells Git where to start, the `^` means "the parent of this commit", since interactive rebase acts on every commit after that point.
 
 ```
 git rebase --interactive ea5972f^
 ```
-This will open a file in your text editor where you can specify what you want to do with each commit in the branch. You can choose to `edit`, `pick`, `reword`, `squash`, `fixup`, or `drop` each commit. For example, if you want to change the message of the commit with the SHA `ea5972f2`, you can change the line in the file from `pick ea5972f2` Add new feature to `reword ea5972f2` Add new feature.
+
+This opens your editor with a list of commits, oldest first, each starting with `pick`:
+
+```
+pick ea5972f Add new feature
+pick 9c1b2d3 Fix typo in login form
+```
+
+Change the word in front of a commit to control what happens to it. For example, changing `pick` to `reword` on `ea5972f` tells Git to pause there and let you edit its message:
+
+```
+reword ea5972f Add new feature
+pick 9c1b2d3 Fix typo in login form
+```
+
+The available actions:
+
+- `pick` - keep the commit as-is
+- `reword` - keep the commit, but edit its message
+- `edit` - pause here so you can amend the commit
+- `squash` - merge this commit into the one above it, combining both messages
+- `fixup` - same as squash, but discard this commit's message
+- `drop` - remove the commit entirely
 
 ## Continue Rebase
-```
+
+```bash
 git rebase --continue
 ```
-This will continue the rebase process.
+
+Resumes the rebase after you've resolved a conflict or finished editing a paused commit.
 
 ## Abort Rebase
-If you want to abort a rebase, you can use the following command:
-```
+
+```bash
 git rebase --abort
 ```
-This will stop the rebase process and return
 
-## How to use interactive rebasing?
-Here is an example of how to use interactive rebasing to clean up the branch history.
+Cancels the rebase in progress and returns the branch to exactly where it was before you started. Safe to use any time you get stuck partway through.
 
-1. First, make sure you are on the branch you want to rebase:
+## Walkthrough: Cleaning Up Branch History
+
+Here's what an interactive rebase looks like end to end, squashing a couple of messy commits into one.
+
+1. Check out the branch you want to clean up:
     ```
     $ git checkout my-feature-branch
     ```
-2. Next, initiate an interactive rebase on the parent branch or specific commit of your feature branch:
+2. Start an interactive rebase against the branch (or commit) it's based on:
     ```
     $ git rebase -i master
     ```
-3. This will open your text editor and display the list of all the commits in your branch, with the newest commit at the bottom.
+3. Git opens your editor with the branch's commits, oldest first:
     ```
     pick 1234567 Add new feature
     pick 2345678 Add more functionality
     pick 3456789 Fix bug
     ```
-4. To clean up your branch history, you can use the following keywords:
-    - `pick`: Keep this commit as-is.
-    - `reword`: Edit the commit message.
-    - `squash`: Combine this commit with the previous one.
-    - `fixup`: Combine this commit with the previous one, but discard the commit message.
-    - `drop`: Discard this commit.
-5. For example, if you want to squash the last two commits into one, you can change the list to:
+4. To combine the last two commits into the first, change their action to `squash` (keeps both messages) or `fixup` (discards them):
     ```
     pick 1234567 Add new feature
     squash 2345678 Add more functionality
     fixup 3456789 Fix bug
     ```
-6. Save and close the file. Git will then perform the rebasing, and prompt you to edit the commit message for the squashed commit:
+5. Save and close the file. Git replays the commits in order, and for any `squash` line, pauses to let you write a combined commit message:
     ```
     # This is a combination of 2 commits.
     # The first commit's message is:
@@ -79,154 +107,93 @@ Here is an example of how to use interactive rebasing to clean up the branch his
     # The second commit's message is:
     # Add more functionality
     #
-
     # Please enter the commit message for your changes. Lines starting
     # with '#' will be ignored, and an empty message aborts the commit.
-    #
-    # Date:      Tue Jan 10 14:00:00 2023 -0800
-    #
-    # rebase in progress; onto bcdef12
-    # You are currently rebasing branch 'my-feature-branch' on 'master'.
-    #
-    # Changes to be committed:
-    #	modified:   my-feature.py
-    #
     ```
-7. Edit the commit message to reflect the changes you made, save, and close the file. The rebasing process will continue.
+6. Edit the message to describe the combined change, save, and the rebase continues automatically.
+7. If Git hits a conflict partway through, it pauses and asks you to resolve it in the affected files. Once resolved, stage the fix and run `git rebase --continue`. If it's too messy to untangle, `git rebase --abort` gets you back to where you started.
 
-8. If there are any conflicts during the rebasing process, Git will ask you to resolve them. Once all conflicts have been resolved, use the `git rebase --continue` command to continue the rebasing process. If you need to abort the rebasing, use the `git rebase --abort` command.
+Once it finishes, `my-feature-branch` has a shorter, cleaner history, three commits became one, with nothing else about the branch's actual content changed.
 
-9. Once the rebasing process is complete, your branch history will be cleaned up, and the changes will be reflected in your remote repository.
+## Fixup Commits
 
-Hope this example helps you understand how to use interactive rebasing in Git. Good luck! 👍
-
-
-## Adding Fixup Commit
-A fixup commit is a type of commit that allows you to quickly apply changes to a specific commit. This can be useful when you want to add changes to a previous commit without creating a new commit or modifying the commit history. The command to add a fixup commit is:
 ```bash
 git commit --fixup=COMMIT_SHA
 ```
-Here, `COMMIT_SHA` is the commit reference you want to add the changes to. 
 
-For example, if you want to add changes to the second last commit, you can run the following command:
+A fixup commit lets you patch an earlier commit without stopping to rebase right now. Running `--fixup` creates a small new commit tagged as a fix for `COMMIT_SHA`, it doesn't rewrite history yet, it just marks itself to be folded into that commit the next time you run an interactive rebase with `--autosquash`.
+
 ```
 git commit --fixup=HEAD^
 ```
-This will create a new commit with the changes and mark it as a fixup commit.
 
-**Notes**: Remember you need to perform **auto squash** in order to clean your commit history.
+You still need to run an interactive rebase with `--autosquash` (below) to actually fold it in.
 
-## Auto Squash Commit
-Auto squashing allows you to combine multiple commits into one. This can be useful when you want to clean up your commit history or make it easier to read. The command to auto squash commits is:
+## Auto Squash
 
 ```bash
 git rebase --interactive --autosquash COMMIT_SHA
 ```
-Where `COMMIT_SHA` is the unique identifier for the commit that you want to squash with the preceding fixup commit. The `--interactive` flag specifies that you want to perform an interactive rebase and the `--autosquash` flag tells Git to automatically rearrange the commit that you are fixing up with the commit that has the matching `--fixup` message.
 
-The `--autosquash` option is used with the interactive rebase to automatically squash fixup commits with the corresponding commit.
+`--autosquash` automatically moves each `fixup!`/`squash!` commit next to the commit it targets and marks it for squashing, so you don't have to manually reorder the rebase file yourself.
 
-### Use case:
-
-- Suppose you have a series of commits and one of the commits needs to be fixed.
-- Instead of rewriting the whole history, you can use the `--fixup` option to create a new commit with the changes.
-- Later, you can use the `--autosquash` option during interactive rebase to automatically squash the fixup commit with the corresponding commit.
-
-### Example 1:
+Example: you committed a feature, moved on to the next thing, then found a bug in it.
 
 ```
-# create a new branch for the example
-git checkout -b rebase_example
-
-# make some changes and commit them
-echo "file1" > file1.txt
-git add file1.txt
-git commit -m "add file1"
-
-# make some more changes and commit them
-echo "file2" > file2.txt
-git add file2.txt
-git commit -m "add file2"
-
-# make a mistake and commit the changes with --fixup option
-echo "fixup" > file2.txt
-git add file2.txt
-git commit --fixup=HEAD^
-
-# use --autosquash option to squash the fixup commit with the corresponding commit
-git rebase -i --autosquash HEAD~3
+$ git log --oneline
+3f3d85d Add more functionality
+ea5972f Add new feature
+83dba5d Initial commit
 ```
-The above example will show the interactive rebase editor with the fixup commit already marked for squashing with the corresponding commit. You can save and exit the editor to complete the rebasing process. The final history will show only the correct changes and the fixup commit will be gone.
 
+Instead of stopping to rebase right now, you fix the bug and mark the commit as a fixup for `ea5972f`:
 
-### Example 2:
-Here is another example of how to perform auto squash in Git:
+```
+$ git commit --fixup=ea5972f
+```
 
-1. First, you need to have multiple commits that you want to squash into a single commit.
-    ```
-    $ git log --oneline
-    1116d17 Refactor code
-    3f3d85d Add more functionality
-    7d90ee3 Fix bug
-    ea5972f Add new feature
-    83dba5d Initial commit
-    ```
-2. Use the git rebase command with the `--interactive` and `--autosquash` options to start an interactive rebase, specifying the `HEAD~4^` (the parent of the 4th commit from the current `HEAD`) as the base. This will cause Git to automatically group all of the `fixup!` commits with the corresponding commits that they fix.
-    ```
-    $ git rebase --interactive --autosquash HEAD~4^
+Git auto-generates the fixup commit's message from the target's subject line, so your log now looks like:
 
-    pick 1116d17 Refactor code
-    pick 3f3d85d Add more functionality
-    f 7d90ee3 Fix bug
-    f ea5972f Add new feature
+```
+$ git log --oneline
+7d90ee3 fixup! Add new feature
+3f3d85d Add more functionality
+ea5972f Add new feature
+83dba5d Initial commit
+```
 
-    # Rebase 83dba5d..1116d17 onto 83dba5d (4 commands)
-    #
-    # Commands:
-    # p, pick = use commit
-    # r, reword = use commit, but edit the commit message
-    # e, edit = use commit, but stop for amending
-    # s, squash = use commit, but meld into previous commit
-    # f, fixup = like "squash", but discard this commit's log message
-    # x, exec = run command (the rest of the line) using shell
-    #
-    # These lines can be re-ordered; they are executed from top to bottom.
-    #
-    # If you remove a line here THAT COMMIT WILL BE LOST.
-    #
-    # However, if you remove everything, the rebase will be aborted.
-    #
-    # Note that empty commits are commented out
-    ```
-3. Run the rebase. Git will now automatically squash the `fixup!` commits into the corresponding commits.
-    ```
-    $ git rebase --continue
-    ```
-4. Successfully rebased and updated refs/heads/master.
-Verify the result by running `git log`. You will see that the separate `fixup!` commits have been squashed into their corresponding commits.
-    ```
-    $ git log --oneline
-    1116d17 Refactor code
-    3f3d85d Add more functionality
-    ea5972f Add new feature
-    83dba5d Initial commit
-    ```
-In this example, the `Fix bug` and A`dd new feature` commits have been automatically squashed into their corresponding commits during the interactive rebase. This makes the commit history more readable and streamlined, while still preserving the changes made in each separate commit.
+Later, run an interactive rebase down to before `ea5972f`, with `--autosquash`:
 
+```
+$ git rebase --interactive --autosquash 83dba5d
+```
+
+`--autosquash` moves the fixup commit right after the commit it targets and marks it, so the rebase file opens already arranged like this:
+
+```
+pick ea5972f Add new feature
+fixup 7d90ee3 fixup! Add new feature
+pick 3f3d85d Add more functionality
+```
+
+Save and continue the rebase, and the fixup disappears into the commit it was fixing:
+
+```
+$ git log --oneline
+3f3d85d Add more functionality
+ea5972f Add new feature
+83dba5d Initial commit
+```
 
 ## The Golden Rules of Git Rebasing
 
-Rebasing is a powerful tool in Git that can change the history of a branch. It allows you to take a set of existing commits and reapply them on top of a different branch. However, it is important to follow some guidelines to ensure that your changes are properly merged and your Git history remains intact.
+1. **Never rebase a public or shared branch.** Rebasing rewrites commits, giving them new hashes. If anyone else has already pulled the branch, their history and yours will diverge, and reconciling that is far more painful than the problem rebase was solving.
+2. **Know what you're doing before you do it.** Rebasing a branch you've already pushed usually means you'll need `git push --force` (or `--force-with-lease`) to update the remote, which overwrites whatever is there. Understand that consequence before you rebase anything that isn't purely local and private.
 
-1. Never use rebasing on public or dependent branches:
+In short: rebase freely on your own private branches to keep history clean, but reach for merge instead once other people are relying on what you've pushed.
 
-    Rebasing on public or dependent branches can cause problems as it can override the hash of existing commits and potentially cause conflicts with other developers who have cloned the branch.
+## See Also
 
-2. Know exactly what you are doing:
-
-    Before using rebasing, it is important to fully understand how it works and the potential consequences of your actions. If you are unsure, it is best to seek guidance from experienced😎 Git users. Also, be aware that rebasing can result in force pushes, which can override the remote branch and 💣erase previous history.
-
-In conclusion, Git rebasing is a useful tool for updating your branch history and keeping it organized, but it should be used with caution. By following the golden rules, you can ensure that your Git repository remains in a stable state and your changes are properly merged.
-
-## Notes
-It is important to note that rebasing can cause conflicts and should be used with caution, as it can `overwrite` existing history. It is best practice to use rebase in a `private branch` and to perform a merge with the main branch only after the rebase is complete.
+- [Git Merge](/commands/merge) - the safer alternative for shared branches
+- [Git Reflog](/commands/reflog) - recovering commits if a rebase goes wrong
+- [Git Cherry-Pick](/commands/cherry-pick) - moving individual commits instead of a whole branch

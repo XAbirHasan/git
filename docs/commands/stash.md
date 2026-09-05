@@ -1,83 +1,108 @@
-# Git stash (Temporary storage)
-Git stash is a command that allows you to temporarily save changes that you have made to your working directory, without committing them. This is useful when you need to switch to a different branch or pull in changes from a remote repository, but you don't want to lose your current work.
+# Git Stash
 
-## Stash changes
-```
-$ git stash
-```
-This command will save the changes in your working directory to a new stash, and revert your working directory to the state of the last commit. You can then switch branches or pull in changes without losing your work.
+Ever been mid-change and suddenly needed to switch branches, pull in updates, or fix an urgent bug, without committing half-finished work just to get there? `git stash` saves your uncommitted changes aside and resets your working directory to match the last commit, so you can go do the other thing and come back to exactly where you left off.
 
-## Add a custom message when stashing
-```
-$ git stash push -m "your message"
-```
-This command works the same way as the regular git stash command, but it allows you to add a custom message to describe the changes that you are stashing. This can be useful for keeping track of what you were working on.
+For the ultimate version of this same problem, needing two branches checked out and buildable *at the same time*, no stashing or switching at all, see [Git Worktree](/productivity/worktree). Stash is for a quick detour; worktree is for when you're bouncing between two things all day.
 
-## Include untracked (new) files
-```
-$ git stash --include-untracked
-// or
-$ git stash -u
-```
-By default, git stash only saves changes to files that are already being tracked by Git. If you want to save changes to new files that haven't been added to the repository yet, you can use the `--include-untracked` or `-u` option.
+## Stashing Changes
 
-## Include untracked and ignored files
 ```
-$ git stash --all
+git stash
 ```
-This command works the same way as the git stash `--include-untracked` command, but it also saves changes to files that are being ignored by Git. This can be useful if you have files that you don't want to commit, but you still want to save their changes.
 
-## View stash list
-```
-$ git stash list
-```
-This command will show a list of all the stashes that you have created, along with their descriptions (if you added any). Each stash is identified by a unique name, called the stash head.
+Saves everything in your working directory (tracked files only, see below) to a new stash entry, and reverts your working directory to the last commit. Switch branches, pull, do whatever you needed to do, then bring the changes back when you're ready.
 
-## Apply last stash changes
+**With a custom message**, so you can tell your stashes apart later:
 ```
-$ git stash pop
+git stash push -m "your message"
 ```
-This command will apply the changes from the most recent stash to your working directory. The stash will be removed from the list of stashes after it is applied.
 
-## Apply specific stash changes
-```
-$ git stash pop <stash-head>
-```
-This command works the same way as the git stash pop command, but it allows you to specify which stash you want to apply by its stash head.
+## What Gets Stashed
 
-## Apply stash changes without deleting it
-```
-$ git stash apply <stash-head>
-```
-This command will apply the changes from the specified stash to your working directory, but it will not remove the stash from the list of stashes.
+By default, only changes to files Git already tracks:
 
+```
+git stash --include-untracked
+# or
+git stash -u
+```
+Also stashes new, untracked files.
 
-## See stash changes
 ```
-$ git stash show <stash-head>
+git stash --all
 ```
-This command will show the changes that were made in the specified stash.
+Stashes everything `-u` does, plus files that are `.gitignore`d, useful if you have local config or generated files you don't want to commit but still want to save alongside the rest.
 
-## View path changes
-```
-$ git stash show --patch <stash-head>
-```
-This command will show the changes that were made in the specified stash, but it will show the changes made in a patch format, which makes it easier to see the specific changes made to each file.
+## Viewing Stashes
 
-## Creating a branch from a stash
 ```
-$ git stash branch "branch-name" <stash-head>
+git stash list
 ```
-This command allows you to create a new branch and apply the changes from the specified stash to it. This can be useful if you want to test your stash changes or work on them in a separate branch. This command is also helpful in a case where reapplying stash might create conflict and you want to test you stash changes or make new branch.
+Shows every stash you've created, each identified by an index (`stash@{0}` is the most recent) and its message, if you gave it one.
 
-## Delete a stash
 ```
-$ git stash drop <stash-head>
+git stash show <stash-head>
 ```
-This command will remove the specified stash from the list of stashes.
+Summarizes what changed in a stash, like `git diff --stat`.
 
-## ❗Clear all stashes
 ```
-$ git stash clear
+git stash show --patch <stash-head>
 ```
-This command will remove all stashes from the list of stashes, be careful with this command, make sure you know what you are doing, as **_it's not reversible_**.
+The full diff instead of just a summary, useful when you need to see the actual line-by-line changes.
+
+## Bringing Changes Back
+
+```
+git stash pop
+```
+Applies the most recent stash to your working directory and removes it from the stash list.
+
+```
+git stash pop <stash-head>
+```
+Same, but for a specific stash instead of the most recent one.
+
+```
+git stash apply <stash-head>
+```
+Applies a stash without removing it from the list, useful when you want to try the same stash on more than one branch, or aren't yet sure the apply will go cleanly.
+
+**Pro tip:** prefer `apply` followed by a manual `drop` over `pop` when you're not fully confident about the result. Git already protects you from the obvious failure case, if `pop` hits a conflict, it keeps the stash rather than losing it. But if the apply succeeds cleanly and just produces the *wrong* result (files merged in a way you didn't expect, say), `pop` has already deleted the stash before you had a chance to notice. `apply` lets you check the outcome first and only run `drop` once you're actually sure:
+```
+git stash apply <stash-head>
+# review the result...
+git stash drop <stash-head>
+```
+
+## Creating a Branch From a Stash
+
+```
+git stash branch "branch-name" <stash-head>
+```
+
+Creates a new branch, checks it out, and applies the stash there. Particularly useful when reapplying a stash directly would conflict with what's changed on your current branch since you stashed, giving it a clean branch of its own sidesteps the conflict entirely.
+
+## Removing Stashes
+
+```
+git stash drop <stash-head>
+```
+Removes one specific stash.
+
+```
+git stash clear
+```
+❗ Removes every stash at once. This is **not reversible** through any stash command, double-check `git stash list` before running it.
+
+**If you drop or clear a stash by mistake**, it's often still recoverable: a stash is really just a commit under the hood, so until Git eventually garbage-collects it, you can find it again with:
+```
+git fsck --unreachable | grep commit
+```
+Each hash listed is a candidate, `git stash apply <hash>` or `git show <hash>` will tell you if it's the one you're after.
+
+## See Also
+
+- [Git Branch](/commands/branch) - creating and switching branches
+- [Git Diff](/commands/diff) - the format `stash show --patch` uses
+- [Git Reflog](/commands/reflog) - a similar local safety net, for commits rather than stashes
+- [Git Worktree](/productivity/worktree) - skip the stash-switch-pop dance entirely for frequent context switching

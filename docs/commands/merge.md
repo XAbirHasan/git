@@ -1,26 +1,15 @@
 # Git Merge
 
-Git merge is a fundamental command used to integrate changes from one branch into another. It's essential for collaborative development and managing different lines of work in your project.
+`git merge` brings another branch's commits into your current branch. It's how finished work gets integrated: a feature branch back into `main`, or the latest `main` into a feature branch you're still working on.
 
-## Understanding Git Merge
+## What Happens When You Merge
 
-When you merge, Git combines the changes from different branches. There are different types of merges:
+- **Fast-forward**: if your current branch hasn't gained any commits since the other branch diverged from it, Git just moves your branch pointer forward to match. No new commit, no history tangle, just catching up.
+- **Three-way merge**: if both branches have new commits, Git combines them and creates a merge commit with two parents, one on each branch.
+- **Squash merge**: combines every commit from the other branch into a single new commit on yours, discarding the individual commit boundaries.
 
-- **Fast-forward merge**: When the target branch hasn't diverged from the source branch
-- **Three-way merge**: When both branches have new commits, creating a merge commit
-- **Squash merge**: Combining all commits from a branch into a single commit
+## Basic Merge
 
-## Basic Merge Commands
-
-### Simple Merge
-
-Merge another branch into your current branch:
-
-```bash
-git merge branch-name
-```
-
-**Example:**
 ```bash
 # Switch to main branch
 git checkout main
@@ -29,11 +18,9 @@ git checkout main
 git merge feature-branch
 ```
 
-### Fast-Forward Merge
+When a fast-forward is possible, this is all you'll see:
 
-When there are no new commits on the target branch:
-
-```bash
+```
 $ git merge feature
 Updating abc123..def456
 Fast-forward
@@ -41,352 +28,22 @@ Fast-forward
  1 file changed, 10 insertions(+)
 ```
 
-Git simply moves the pointer forward. No merge commit is created.
-
-## Merge Options
-
-### No Fast-Forward
-
-Force creation of a merge commit even when fast-forward is possible:
+You can merge a remote-tracking branch directly too, without checking it out locally first:
 
 ```bash
-git merge --no-ff branch-name
-```
-
-**Why use it?**
-- Preserves branch history
-- Makes it clear a feature was merged
-- Easier to revert entire features
-
-**Example:**
-```bash
-$ git merge --no-ff feature-login
-Merge made by the 'recursive' strategy.
- login.js | 50 ++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
-```
-
-### Fast-Forward Only
-
-Refuse to merge unless it can be done with fast-forward:
-
-```bash
-git merge --ff-only branch-name
-```
-
-If fast-forward isn't possible, the merge will fail.
-
-### Squash Merge
-
-Combine all commits from the branch into a single commit:
-
-```bash
-git merge --squash branch-name
-```
-
-This stages all changes but doesn't commit them. You need to commit manually.
-
-**Example:**
-```bash
-$ git merge --squash feature
-Squash commit -- not updating HEAD
-Automatic merge went well; stopped before committing as requested
-
-$ git commit -m "Add login feature"
-```
-
-**Use cases:**
-- Clean up messy commit history
-- Merge work-in-progress branches
-- Keep main branch history clean
-
-## Merge with Custom Message
-
-```bash
-# Provide custom merge commit message
-git merge branch-name -m "Merge feature: Add user authentication"
-
-# Open editor for detailed merge message
-git merge branch-name --edit
-```
-
-## Merge Strategies
-
-### Recursive Strategy (Default)
-
-```bash
-git merge -s recursive branch-name
-```
-
-The default strategy for merging two branches. Good for most cases.
-
-### Ours Strategy
-
-```bash
-git merge -s ours branch-name
-```
-
-Ignores all changes from the other branch. Useful for marking branches as merged without actually merging changes.
-
-### Theirs Strategy Option
-
-```bash
-git merge -X theirs branch-name
-```
-
-When there are conflicts, automatically prefer changes from the branch being merged.
-
-### Ours Strategy Option
-
-```bash
-git merge -X ours branch-name
-```
-
-When there are conflicts, automatically prefer changes from the current branch.
-
-**Example:**
-```bash
-# Always prefer current branch changes on conflict
-git merge -X ours feature-branch
-```
-
-## Handling Merge Conflicts
-
-### Understanding Conflicts
-
-When Git can't automatically merge changes, you get a conflict:
-
-```bash
-$ git merge feature
-Auto-merging file.txt
-CONFLICT (content): Merge conflict in file.txt
-Automatic merge failed; fix conflicts and then commit the result.
-```
-
-### Conflict Markers
-
-Git marks conflicts in files like this:
-
-```
-<<<<<<< HEAD
-This is the content from your current branch
-=======
-This is the content from the branch being merged
->>>>>>> feature-branch
-```
-
-### Resolving Conflicts
-
-**Step 1:** Check which files have conflicts:
-```bash
-git status
-```
-
-**Step 2:** Open conflicted files and edit them:
-- Remove conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`)
-- Choose which changes to keep (or combine them)
-- Save the file
-
-**Step 3:** Stage the resolved files:
-```bash
-git add file.txt
-```
-
-**Step 4:** Complete the merge:
-```bash
-git commit
-```
-
-Or commit with a custom message:
-```bash
-git commit -m "Merge feature-branch: resolved conflicts in file.txt"
-```
-
-### Aborting a Merge
-
-If you want to cancel the merge and return to the pre-merge state:
-
-```bash
-git merge --abort
-```
-
-### Using Merge Tools
-
-Open a visual merge tool to resolve conflicts:
-
-```bash
-git mergetool
-```
-
-Configure your preferred tool:
-```bash
-git config --global merge.tool vimdiff
-# or
-git config --global merge.tool meld
-# or
-git config --global merge.tool vscode
-```
-
-## Advanced Merge Techniques
-
-### Merge Specific Commits
-
-Use `git cherry-pick` instead for specific commits, but you can merge up to a specific commit:
-
-```bash
-git merge branch-name~5
-```
-
-### Merge Without Committing
-
-Stage the merge but don't create a commit:
-
-```bash
-git merge --no-commit branch-name
-```
-
-Review the changes, make adjustments, then commit:
-```bash
-git commit
-```
-
-### Verify Merge Result
-
-Before completing a merge, verify the result:
-
-```bash
-# See what will be merged
-git merge --no-commit --no-ff branch-name
-
-# Review changes
-git diff --cached
-
-# If satisfied, commit
-git commit
-
-# If not, abort
-git merge --abort
-```
-
-### Allow Unrelated Histories
-
-Merge branches that don't share a common ancestor:
-
-```bash
-git merge --allow-unrelated-histories branch-name
-```
-
-**Use case:** Combining two separate projects.
-
-## Checking Merge Status
-
-### See What's Been Merged
-
-```bash
-# List branches merged into current branch
-git branch --merged
-
-# List branches not yet merged
-git branch --no-merged
-```
-
-### View Merge History
-
-```bash
-# Show merge commits in log
-git log --merges
-
-# Show merge commits with details
-git log --merges --oneline
-
-# Exclude merge commits from log
-git log --no-merges
-```
-
-### Check if Branch Can Be Merged
-
-```bash
-# Dry run to see if merge would succeed
-git merge --no-commit --no-ff branch-name
-
-# If successful, abort
-git merge --abort
-```
-
-## Common Merge Workflows
-
-### Feature Branch Workflow
-
-```bash
-# Create and switch to feature branch
-git checkout -b feature-login
-
-# Make changes and commit
-git add .
-git commit -m "Add login functionality"
-
-# Switch back to main
-git checkout main
-
-# Pull latest changes
-git pull origin main
-
-# Merge feature branch
-git merge feature-login
-
-# Push merged changes
-git push origin main
-
-# Delete feature branch
-git branch -d feature-login
-```
-
-### Merge with Rebase First
-
-Clean merge by rebasing feature branch first:
-
-```bash
-# On feature branch
-git checkout feature
-
-# Rebase onto main
-git rebase main
-
-# Switch to main
-git checkout main
-
-# Merge (will be fast-forward)
-git merge feature
-```
-
-### Merge from Remote Branch
-
-```bash
-# Fetch latest changes
 git fetch origin
-
-# Merge remote branch
 git merge origin/feature-branch
 ```
 
-## Best Practices
-
-### 1. Always Pull Before Merging
+## Writing a Custom Merge Message
 
 ```bash
-git checkout main
-git pull origin main
-git merge feature-branch
+git merge branch-name -m "Merge feature: Add user authentication"
+# or open an editor for something longer
+git merge branch-name --edit
 ```
 
-### 2. Use --no-ff for Feature Branches
-
-Preserve branch history:
-```bash
-git merge --no-ff feature-branch
-```
-
-### 3. Write Descriptive Merge Messages
+By default Git writes a generic "Merge branch 'x'" message. Overriding it is worth doing when the merge itself is significant enough to explain, a completed feature, a release branch, anything future-you would want more context on than the default gives. Like `git commit`, you can give it a full body, not just a headline:
 
 ```bash
 git merge feature-login -m "Merge feature: User authentication system
@@ -396,172 +53,94 @@ git merge feature-login -m "Merge feature: User authentication system
 - Added password reset functionality"
 ```
 
-### 4. Test Before Merging
+## Controlling Fast-Forward Behavior
 
 ```bash
-# Create a test merge
-git merge --no-commit feature-branch
+git merge --no-ff branch-name
+```
+Forces a real merge commit even when a fast-forward was possible. Worth doing on feature branches: the merge commit marks exactly where the feature landed, which makes the history easier to read and the whole feature easier to revert as one unit later.
 
-# Run tests
-npm test
+```bash
+git merge --ff-only branch-name
+```
+The opposite: refuses to merge unless it can fast-forward, failing loudly instead of silently creating a merge commit. Useful in scripts or CI where you want to catch unexpected divergence rather than merge through it.
 
-# If tests pass, complete merge
-git commit
+If you always want one of these, set it once instead of typing the flag every time:
+```bash
+git config --global merge.ff false   # always create a merge commit
+git config --global merge.ff only    # only allow fast-forward
+```
 
-# If tests fail, abort
+## Squash Merge
+
+```bash
+git merge --squash branch-name
+git commit -m "Add login feature"
+```
+Stages all the branch's changes but doesn't commit automatically, you write one commit message covering the whole thing. Good for folding in a messy work-in-progress branch without dragging its entire commit history into `main`.
+
+## Merge Strategies vs. Merge Options
+
+These sound similar but control different things.
+
+**Strategy** (`-s`) decides *how* the merge is computed overall:
+```bash
+git merge -s ours branch-name
+```
+Records a merge, but keeps your branch's content entirely, the other branch's changes are ignored completely. Useful for marking a branch as merged without pulling in anything from it.
+
+**Option** (`-X`) tells the default strategy which side to prefer *only when there's a conflict*, everything that merges cleanly still merges normally:
+```bash
+git merge -X theirs branch-name   # on conflict, prefer the branch being merged in
+git merge -X ours branch-name     # on conflict, prefer your current branch
+```
+
+Mixing these up is an easy mistake: `-s ours` throws away the whole other branch, `-X ours` only affects the specific lines that actually conflict.
+
+The strategy used when you don't specify one is "recursive" on older Git, or "ort" (a faster reimplementation of the same idea) on Git 2.33+, functionally the same behavior either way for a normal two-branch merge.
+
+## Resolving Conflicts
+
+Git tells you when it can't merge automatically:
+
+```
+$ git merge feature
+Auto-merging file.txt
+CONFLICT (content): Merge conflict in file.txt
+Automatic merge failed; fix conflicts and then commit the result.
+```
+
+It marks the conflicting section directly in the file:
+
+```
+<<<<<<< HEAD
+This is the content from your current branch
+=======
+This is the content from the branch being merged
+>>>>>>> feature-branch
+```
+
+1. Check which files have conflicts: `git status`
+2. Open each one, remove the `<<<<<<<`/`=======`/`>>>>>>>` markers, and decide what the final content should be
+3. Stage the resolved files: `git add file.txt`
+4. Finish the merge: `git commit` (or `git commit -m "..."` for a custom message)
+
+If it's more than you want to untangle right now:
+```bash
 git merge --abort
 ```
+Cancels the merge and returns you to exactly where you were beforehand.
 
-### 5. Resolve Conflicts Carefully
-
-- Understand both changes before resolving
-- Test after resolving conflicts
-- Ask for help if unsure
-- Use merge tools for complex conflicts
-
-## Merge vs Rebase
-
-### When to Use Merge
-
-✅ Merging release branches  
-✅ Incorporating finished features  
-✅ Public/shared branches  
-✅ Preserving exact history  
-✅ Working with others on same branch  
-
-### When to Use Rebase
-
-✅ Cleaning up local commits  
-✅ Feature branches before merging  
-✅ Keeping history linear  
-✅ Private/local branches  
-
-## Common Merge Scenarios
-
-### Scenario 1: Simple Feature Merge
-
+For complex conflicts, a visual merge tool can help:
 ```bash
-# On main branch
-git merge feature-branch
-# Fast-forward if possible, creates merge commit if needed
+git mergetool
+git config --global merge.tool vscode   # or vimdiff, meld, etc.
 ```
 
-### Scenario 2: Merge with Guaranteed Merge Commit
-
+Seeing the common ancestor alongside both sides also helps in tricky cases:
 ```bash
-git merge --no-ff feature-branch
-# Always creates a merge commit, even if fast-forward is possible
-```
-
-### Scenario 3: Squash Multiple Commits
-
-```bash
-git merge --squash experimental-feature
-git commit -m "Add experimental feature"
-# All commits from experimental-feature become one commit
-```
-
-### Scenario 4: Merge Conflict Resolution
-
-```bash
-git merge feature
-# CONFLICT!
-
-# Edit conflicted files
-vim conflicted-file.txt
-
-# Stage resolved files
-git add conflicted-file.txt
-
-# Complete merge
-git commit
-```
-
-### Scenario 5: Partial Merge Undo
-
-```bash
-# Started merge but want to undo
-git merge --abort
-
-# Or reset if merge was completed
-git reset --hard HEAD~1
-```
-
-## Troubleshooting
-
-### Merge Conflicts Are Overwhelming
-
-```bash
-# Abort and try a different approach
-git merge --abort
-
-# Consider rebasing first to reduce conflicts
-git checkout feature
-git rebase main
-git checkout main
-git merge feature
-```
-
-### Accidental Merge
-
-```bash
-# Undo last merge (if not pushed)
-git reset --hard HEAD~1
-
-# Or use reflog to find previous state
-git reflog
-git reset --hard HEAD@{1}
-```
-
-### Merge Creates Unwanted Files
-
-```bash
-# Check what changed
-git diff HEAD~1
-
-# Undo merge
-git reset --hard HEAD~1
-
-# Fix the issue on the branch and re-merge
-```
-
-### Can't Fast-Forward
-
-```bash
-# If you require fast-forward but it fails:
-$ git merge --ff-only feature
-fatal: Not possible to fast-forward, aborting.
-
-# Solution: Rebase the branch first
-git checkout feature
-git rebase main
-git checkout main
-git merge --ff-only feature
-```
-
-## Merge Configuration
-
-### Set Default Merge Strategy
-
-```bash
-# Always create merge commit
-git config --global merge.ff false
-
-# Only allow fast-forward
-git config --global merge.ff only
-
-# Default behavior (fast-forward when possible)
-git config --global merge.ff true
-```
-
-### Configure Conflict Style
-
-```bash
-# Show common ancestor in conflicts (diff3)
 git config --global merge.conflictstyle diff3
 ```
-
-This shows:
 ```
 <<<<<<< HEAD
 Your changes
@@ -572,25 +151,89 @@ Their changes
 >>>>>>> branch
 ```
 
-## Summary
+## Previewing Before You Commit
 
-Git merge is essential for:
-- ✅ Integrating feature branches
-- ✅ Combining work from multiple developers
-- ✅ Managing release workflows
-- ✅ Keeping branches synchronized
+```bash
+# See what will be merged
+git merge --no-commit --no-ff branch-name
 
-**Key Takeaways:**
-- `git merge` combines branches
-- `--no-ff` preserves branch history
-- `--squash` creates clean history
-- Always resolve conflicts carefully
-- Test before and after merging
+# Review changes
+git diff --cached
+# happy with it:
+git commit
+# not happy with it:
+git merge --abort
+```
+Runs the merge and stops right before committing, so you can review the combined result and back out cleanly if it's not what you expected.
+
+## Merging Unrelated Histories
+
+```bash
+git merge --allow-unrelated-histories branch-name
+```
+Normally Git refuses to merge branches with no common ancestor, this overrides that, needed when combining two previously separate projects into one repository.
+
+## Checking Merge Status
+
+```bash
+git branch --merged      # already merged into current branch, safe to delete
+git branch --no-merged   # not yet merged
+git log --merges         # just the merge commits
+git log --no-merges      # everything except merge commits
+```
+
+## Merge vs. Rebase
+
+Both integrate one branch's work into another, but they leave different history behind:
+
+- **Merge** when: the branch is shared with others, you want to preserve exactly what happened and when, or you're bringing a finished feature into `main`.
+- **Rebase** when: you're cleaning up commits on your own local branch before anyone else has seen them, or you want linear history instead of merge commits.
+
+The two combine well: rebase your feature branch onto `main` first, then merge, and the merge itself becomes a fast-forward with no merge commit at all.
+
+```bash
+git checkout feature
+git rebase main
+git checkout main
+git merge feature   # fast-forward, since feature now starts from main's current tip
+```
+
+See [Git Rebase](/commands/rebase) for the full comparison.
+
+## A Full Feature-Branch Lifecycle
+
+Putting the pieces together, this is the shape most feature work follows end to end:
+
+```bash
+git checkout -b feature-login       # start the feature
+git add .
+git commit -m "Add login functionality"
+
+git checkout main
+git pull origin main                # make sure main is current before merging into it
+git merge feature-login             # bring the feature in
+git push origin main
+
+git branch -d feature-login         # clean up, now that it's merged
+```
+
+## Troubleshooting
+
+**Overwhelming conflicts:** `git merge --abort`, then consider rebasing the feature branch onto `main` first, resolving conflicts commit-by-commit tends to be easier than all at once.
+
+**Accidental merge (not yet pushed):** `git reset --hard HEAD~1` undoes it. If you've made other commits since, `git reflog` will help you find the pre-merge state instead.
+
+**Merge introduced something unexpected:** `git diff HEAD~1` shows exactly what the merge added before you decide whether to undo it, often faster than trying to remember which side a change came from.
+
+**Can't fast-forward when using `--ff-only`:**
+```
+fatal: Not possible to fast-forward, aborting.
+```
+Rebase the branch onto the target first, then retry the merge.
 
 ## See Also
 
-- [Git Branch](./branch.md) - Branch management
-- [Git Rebase](./rebase.md) - Alternative to merge
-- [Git Cherry-Pick](./cherry-pick.md) - Merge specific commits
-- [Git Diff](./diff.md) - See changes before merging
-- [Git Reset](./reset.md) - Undo merges
+- [Git Branch](/commands/branch) - creating and managing branches
+- [Git Rebase](/commands/rebase) - the alternative to merge for local cleanup
+- [Git Reset](/commands/reset) - undoing a merge
+- [Git Reflog](/commands/reflog) - recovering from a bad merge after other commits happened

@@ -1,35 +1,22 @@
 # Git Push
 
-`git push` uploads your local commits to a remote repository, making your changes available to others. It's the complement to `git pull` and essential for collaboration.
+`git push` uploads your local commits to a remote repository, it's the other half of `git pull`: without it, your commits stay on your machine and nobody else ever sees them.
 
 ## Basic Push
 
-### Push to Remote
-
 ```bash
-# Push current branch to remote
-git push
-
-# Push to specific remote and branch
-git push origin main
+git push                # push current branch to its upstream
+git push origin main    # push to a specific remote and branch
 ```
 
-### First Push (Set Upstream)
-
+**First push on a new branch** needs `-u` to set up tracking, so future pushes know where to go:
 ```bash
-# Push and set upstream tracking
 git push -u origin branch-name
-
-# Now future pushes just need
+# from then on, just:
 git push
 ```
-
-**Example:**
-```bash
+```
 $ git push -u origin feature-login
-Counting objects: 5, done.
-Writing objects: 100% (5/5), 450 bytes | 450.00 KiB/s, done.
-Total 5 (delta 0), reused 0 (delta 0)
 To https://github.com/user/repo.git
  * [new branch]      feature-login -> feature-login
 Branch 'feature-login' set up to track remote branch 'feature-login' from 'origin'.
@@ -37,184 +24,94 @@ Branch 'feature-login' set up to track remote branch 'feature-login' from 'origi
 
 ## Push Options
 
-### Push All Branches
-
 ```bash
-# Push all branches
-git push --all
+git push --all             # push every local branch
+git push origin --all      # same, to a specific remote
 
-# Push all branches to specific remote
-git push origin --all
-```
+git push origin v1.0.0     # push one tag
+git push --tags            # push every tag
 
-### Push Tags
-
-```bash
-# Push specific tag
-git push origin v1.0.0
-
-# Push all tags
-git push --tags
-
-# Push tags to specific remote
-git push origin --tags
-```
-
-### Force Push
-
-```bash
-# Force push (DANGER!)
-git push --force
-
-# Safer force push
-git push --force-with-lease
-```
-
-⚠️ **Warning:** Only force push on branches you own!
-
-### Delete Remote Branch
-
-```bash
-# Delete remote branch
-git push origin --delete branch-name
-
-# Alternative syntax
+git push origin --delete branch-name   # delete a branch on the remote
+# or, older syntax with the same effect
 git push origin :branch-name
+
+git push --dry-run         # see what would be pushed, without pushing it
 ```
 
-### Dry Run
-
+**Force push:**
 ```bash
-# See what would be pushed without pushing
-git push --dry-run
+git push --force              # DANGER: overwrites whatever is on the remote
+git push --force-with-lease   # safer: fails if the remote has commits you haven't seen
 ```
+⚠️ Only force push branches you own. `--force-with-lease` refuses to overwrite anything you haven't already fetched, so it can't accidentally erase a teammate's work the way plain `--force` can, use it as the default and reach for plain `--force` only when you're certain.
 
-## Push Strategies
-
-### Simple Push (Default)
-
-Push current branch to its upstream:
+## Pushing to a Different Name or Multiple Branches
 
 ```bash
-git push
-```
-
-### Push to Different Branch Name
-
-```bash
-# Push local 'feature' to remote 'feature-v2'
-git push origin feature:feature-v2
-```
-
-### Push Multiple Branches
-
-```bash
-# Push multiple branches at once
-git push origin main develop feature
+git push origin feature:feature-v2      # push local 'feature' as remote 'feature-v2'
+git push origin main develop feature    # push several branches at once
 ```
 
 ## Common Scenarios
 
-### Scenario 1: First Time Push
-
+**After a rebase**, you'll need to force push, since rebasing rewrites commit hashes and a plain push will be rejected:
 ```bash
-# Create branch and commit
-git checkout -b new-feature
-git commit -m "Add feature"
-
-# Push and set upstream
-git push -u origin new-feature
-```
-
-### Scenario 2: Regular Push
-
-```bash
-# Make changes
-git add .
-git commit -m "Update feature"
-
-# Push
-git push
-```
-
-### Scenario 3: Push After Rebase
-
-```bash
-# Rebase your branch
 git rebase main
-
-# Force push (your branch only!)
-git push --force-with-lease
+git push --force-with-lease   # never plain --force here, someone may have pushed since
 ```
 
-### Scenario 4: Push to Fork
-
+**Pushing to a fork's upstream** (if you have write access):
 ```bash
-# Push to your fork
-git push origin main
-
-# Push to upstream (if you have write access)
-git push upstream main
+git push origin main      # your fork
+git push upstream main    # the original repo
 ```
 
 ## Troubleshooting
 
-### Push Rejected (Non-Fast-Forward)
-
+**Rejected, non-fast-forward:**
 ```bash
 $ git push
 To https://github.com/user/repo.git
  ! [rejected]        main -> main (non-fast-forward)
 error: failed to push some refs to 'https://github.com/user/repo.git'
 ```
-
-**Solution:**
+Someone else pushed since you last pulled. Pull first, then push:
 ```bash
-# Pull first
 git pull origin main
-
-# Or pull with rebase
+# or, to avoid a merge commit
 git pull --rebase origin main
-
-# Then push
 git push
 ```
 
-### No Upstream Branch
-
+**No upstream branch:**
 ```bash
 $ git push
 fatal: The current branch feature has no upstream branch.
 ```
+to fix this:
 
-**Solution:**
 ```bash
 git push -u origin feature
 ```
 
-### Permission Denied
-
+**Permission denied:**
 ```bash
 $ git push
 ERROR: Permission to user/repo.git denied
 ```
-
-**Solution:**
-- Check repository access
-- Verify SSH keys
-- Check remote URL
-- Ensure you're authenticated
+Check that you actually have write access, that your SSH key is set up (`ssh -T git@github.com`), and that the remote URL is correct (`git remote -v`).
 
 ## Best Practices
 
-1. **Always pull before pushing**
-2. **Use `--force-with-lease` instead of `--force`**
-3. **Push regularly to backup your work**
-4. **Don't force push to shared branches**
-5. **Push feature branches to create backups**
+1. **Always pull before pushing**, so you find out about conflicts locally instead of getting rejected.
+2. **Use `--force-with-lease` instead of `--force`**, it refuses to overwrite commits you haven't seen.
+3. **Push regularly**, even to a feature branch, so your work is backed up somewhere besides your own machine.
+4. **Avoid force pushing to shared branches.** If you absolutely have to, tell everyone else on that branch first, a force push can silently drop commits they've already pulled.
+5. **Push feature branches early**, not just when they're finished, it's a free backup while you work.
 
 ## See Also
 
-- [Git Fetch & Pull](./pull.md) - Fetching and pulling
-- [Git Remote](./remote.md) - Managing remotes
-- [Git Branch](./branch.md) - Branch management
+- [Git Fetch & Pull](/commands/pull) - the other direction
+- [Git Remote](/commands/remote) - managing where you push to
+- [Git Rebase](/commands/rebase) - why a rebase forces you to force push
+- [Git Branch](/commands/branch) - branch and tracking basics

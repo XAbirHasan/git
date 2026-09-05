@@ -1,63 +1,72 @@
 # Checking the Status of Your Files with Git
 
-Git is a powerful version control system that allows developers to keep track of the changes made to their code. One of the most important aspects of Git is being able to check the status of your files, including which files have been modified, added, or deleted. This guide will cover some of the most useful `git status` commands and options that developers can use to check the status of their files.
+`git status` shows what's changed in your working directory and staging area relative to your last commit: which files are modified, staged, or untracked. It's usually the first thing worth running before deciding what to do next: stage something, discard something, or just get your bearings on a repository you haven't touched in a while.
 
 ## View File Status
+
 ```
 git status
 ```
-The `git status` command is the most basic and commonly used command for checking the status of your files in Git. It shows the changes that have been made to the files in your local repository, including modified, added, and deleted files. The output of this command will show the current branch you are on, the files that have been modified, and any files that have been added or deleted but not yet committed.
 
-Example:
-  ```
-  On branch master
-  Your branch is up to date with 'origin/master'.
+This is the most basic and most commonly used form. The output tells you the current branch, whether it's ahead/behind/up to date with its remote, and which files have been modified, added, or deleted but not yet committed.
 
-  Changes not staged for commit:
-    (use "git add <file>..." to update what will be committed)
-    (use "git restore <file>..." to discard changes in working directory)
-          modified:   README.md
+Sample output:
+```
+On branch master
+Your branch is up to date with 'origin/master'.
 
-  no changes added to commit (use "git add" and/or "git commit -a")
-  ```
-  In this example, the current branch is `master` and it's up to date with the `origin/master`. The output also shows that the file `README.md` has been modified but not yet committed.
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   README.md
 
-## View Short Status
+no changes added to commit (use "git add" and/or "git commit -a")
+```
+Here, the branch is `master`, it's up to date with `origin/master`, and `README.md` has been modified but not yet staged.
+
+## Short Status
+
 ```
 git status --short
 ```
-If you want to see a more concise version of the status, you can use the `--short` option. This option displays the status in a shorter format, which is easier to read when you have a large number of files. The output will show the file status using a single letter code, such as `M` for modified, `A` for added, and `D` for deleted.
 
-Example:
+The full output above gets noisy once you have more than a handful of changed files. `--short` condenses it to one line per file, using a letter code: `M` modified, `A` added, `D` deleted, `??` untracked. Useful for a quick scan when you just want to see which files changed, not the full explanation of each.
+
 ```
 M README.md
 ```
-In this example, `README.md` has been modified but not yet committed.
 
-## View in Machine-Readable Format
+## Machine-Readable Format
+
 ```
 git status --porcelain
 ```
-The `--porcelain` option causes git status to display the status in a machine-readable format, which is intended to be easy to parse by scripts and other automated tools. The output will show the file status using a two-letter code, such as `M` for modified, `A` for added, and `D` for deleted.
 
-Example:
+The `--porcelain` option causes `git status` to display the status in a machine-readable format, intended to be easy to parse by scripts and other automated tools. It looks similar to `--short`, but unlike `--short`, its format is guaranteed to stay stable across Git versions and user configuration, which is exactly what a script parsing the output needs.
+
 ```
 M README.md
 ```
-In this example, `README.md` has been modified but not yet committed.
 
-## View File Differences
+## Viewing File Differences
+
 ```
 git diff <file>
 ```
-This command shows the difference between the version of the file in your working directory and the version in the repository. It can be used to see the changes you have made to a specific file before committing them. The output will show the line-by-line differences between the two versions of the file.
 
-Example:
+`git status` tells you *that* a file changed; `git diff` shows you *how*: the actual line-by-line changes in your working directory compared to the repository. Run it before staging or committing to review exactly what you're about to save.
+
 ```
 diff --git a/README.md b/README.md
 index 0a1f2e3..4b5c6d7 100644
 --- a/README.md
 +++ b/README.md
 @@ -1,5 +1,5 @@
-  # My Project
+ # My Project
 ```
+
+## See Also
+
+- [Git Diff](/commands/diff) - full diff reference
+- [Git Add](/commands/add) - staging changes
+- [Git Restore](/commands/restore) - discarding changes

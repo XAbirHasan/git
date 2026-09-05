@@ -1,15 +1,16 @@
 # Commit
-`git commit` is an essential command that allows developers to save changes to their codebase. Committing code is like taking a snapshot of your project at a specific point in time, allowing you to track and revert to previous versions of your code. The following are some useful options and commands for committing code using Git.
+
+`git commit` saves your staged changes as a snapshot in the project's history: a point you can always come back to, compare against, or point someone to later. Think of each commit as a checkpoint you can return to if something goes wrong.
 
 ## Adding a Commit Message
-The most basic form of committing code is to add a commit message using the `-m` option.
+
+The most basic form of committing is a short message describing what changed, using the `-m` option:
 
 ```
 git commit -m "your message"
 ```
-Example:
 
-If you have made changes to a file called main.py and want to commit those changes with the message "Added new feature", you would use the following command:
+Example: you've changed `main.py` and want to commit it with the message "Added new feature":
 
 ```
 $ git add main.py
@@ -18,33 +19,33 @@ $ git commit -m "Added new feature"
  1 file changed, 1 insertion(+), 1 deletion(-)
 ```
 
-## Adding Headline and Details
-You can also add a headline and additional details in the commit message by using the `-m` option multiple times.
+## Adding a Headline and Details
+
+For a change that needs more explanation than a single line, pass `-m` twice: the first becomes the headline, the second becomes the body of the commit message. This is useful when the *what* is obvious from the diff but the *why* isn't.
 
 ```
 git commit -m "Headline" -m "details"
 ```
+
 Example:
-
-If you want to commit changes with the headline "Added new feature" and additional details "added new function to calculate average", you would use the following command:
-
 ```
-$ git add main.py
 $ git commit -m "Added new feature" -m "added new function to calculate average"
 [master c1f2e3d4] Added new feature
  1 file changed, 1 insertion(+), 1 deletion(-)
 ```
 
-## Reusing Commit Message from Another Commit
-One of the powerful features of Git is the ability to reuse commit messages from previous commits. This can be useful when you want to make a similar change to multiple files, or when you want to group related commits together.
+## Reusing a Commit Message from Another Commit
 
-#### Using the `--reuse-message` or `-C` Option
+Git lets you reuse a commit message from an earlier commit instead of retyping it. This is handy when you're making a similar change across multiple files, or grouping related commits under a consistent message.
+
+### `--reuse-message` / `-C`
+
 ```
 git commit --reuse-message=<commit-sha>
 ```
-This command will reuse the commit message from the specified commit (indicated by its SHA hash) for the new commit. It will also reuse the timestamp of the original commit.
 
-Example:
+Reuses the message *and timestamp* from `<commit-sha>` exactly as they were, without opening an editor.
+
 ```
 $ git log --oneline
 f6c9a6b Fix typo in README
@@ -53,60 +54,64 @@ f6c9a6b Fix typo in README
 $ git add README.md
 $ git commit --reuse-message=f6c9a6b
 ```
-In this example, we are reusing the commit message "Fix typo in README" and the timestamp of the commit with SHA hash "f6c9a6b" for a new commit.
 
-#### Using the `--reedit-message` or `-c` Option
+This creates a new commit carrying the message "Fix typo in README" and the timestamp from `f6c9a6b`.
+
+### `--reedit-message` / `-c`
+
 ```
 git commit --reedit-message=<commit-sha>
 ```
-This command will reuse the commit message from the specified commit, but will also open the editor to allow you to make changes to the message.
 
-Example:
+Same idea as `-C`, but opens the message in your editor first so you can adjust it before committing. Useful when the old message is a good starting point but not quite right for this commit.
+
 ```
-$ git log --oneline
-f6c9a6b Fix typo in README
-8ecab1a Add new feature
-
 $ git add README.md
 $ git commit --reedit-message=f6c9a6b
 ```
-In this example, git will open an editor to allow you to edit the message "Fix typo in README" before creating the new commit.
 
 ## Amending a Commit
+
 ```
 git commit --amend
 ```
-This command allows you to make changes to the last commit. This can be useful if you forgot to include some changes in the commit, or if you want to change the commit message. When you run this command, Git will open the commit message in your text editor so you can make changes. Once you save and exit the editor, the changes will be committed.
 
-Example:
+Rewrites the most recent commit instead of creating a new one. This is useful when you forgot to include a file in your last commit, or want to change its message. Rather than making a separate "oops, forgot this" commit, you fold the fix into the one it belongs to. Git reopens the commit message in your editor; save and exit to apply the change.
+
 ```
 $ git commit -m "Initial commit"
 $ git add forgot_to_include.txt
 $ git commit --amend
 ```
-In this example, the initial commit was made without the file forgot_to_include.txt. The git add command was used to stage the file and the `git commit --amend` command was used to add the file to the previous commit.
 
-### Amending a Commit Without Changing the Commit Message
+Here, the initial commit was missing `forgot_to_include.txt`. Staging it and running `--amend` adds it to that same commit instead of creating a new one.
+
+### Amending Without Changing the Message
+
 ```
 git commit --amend --no-edit
 ```
-The `--no-edit` option allows developers to make changes to the most recent commit without modifying the commit message. This can be useful if a developer needs to make a small change to their last commit, such as forgetting to add a file or fixing a typo in the commit message.
 
-Example:
+Same as `--amend`, but keeps the existing commit message untouched. Useful for a quick fix, like a forgotten file or a typo in the code, where the original message still accurately describes the commit.
+
 ```
 $ git commit -m "initial commit"
 [master (root-commit) abcdef0] initial commit
  1 file changed, 2 insertions(+)
  create mode 100644 file.txt
- 
-$ git add forgotten-file.txt
 
+$ git add forgotten-file.txt
 $ git commit --amend --no-edit
 [master abcdef0] initial commit
  2 files changed, 2 insertions(+)
  create mode 100644 file.txt
  create mode 100644 forgotten-file.txt
 ```
-In this example, the first commit "initial commit" was made with only one file "file.txt", but later the developer realized that they forgot to add "forgotten-file.txt" to the commit. So by using git commit --amend --no-edit the last commit was updated to include the "forgotten-file.txt".
 
-🚑 :exclamation:  **Please note** that this command **rewrites the commit history**, so use it with caution if the branch is already pushed to a remote repository or shared with other collaborators.
+⚠️ **Please note:** `--amend` **rewrites commit history**. Use it with caution if the commit has already been pushed to a remote or shared with other collaborators: anyone who already pulled the old commit will run into a diverged history.
+
+## See Also
+
+- [Git Add](/commands/add) - staging changes before committing
+- [Git Log](/commands/log) - viewing commit history
+- [Git Reflog](/commands/reflog) - recovering commits after a bad amend or reset

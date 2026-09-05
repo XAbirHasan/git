@@ -1,140 +1,101 @@
-# Reset changes
-The `git reset` is a command that allows you to undo or discard changes made in a previous commit or series of commits. It can be used in several different ways, depending on the specific use case.
+# Reset Changes
+
+Ever committed something too early, or wanted to make your last few commits disappear as if they'd never happened? That's what `git reset` is for: it undoes or discards changes from a previous commit or series of commits. Depending on the mode you use, it can be as gentle as moving `HEAD` back while keeping everything you did, or as destructive as wiping the working tree to match an older commit entirely.
 
 ## Reset Last Commit
+
 ```
 git reset HEAD~1
 ```
-This command will undo the changes made in the last commit and move the `HEAD` pointer one commit back. It will also keep the changes made in the last commit in the working tree, allowing you to make additional changes before committing again.
 
-Example:
+Undoes the last commit and moves `HEAD` back one commit, but keeps the changes from that commit sitting in your working tree, so you can fix them up and commit again. Useful when a commit turns out not to be ready to push yet.
+
 ```
-$ git log
-commit 2a468b8 (HEAD -> master)
-Author: XAbirHasan
-Date:   Mon Jan 2 12:00:00 2023
-
-Added new feature
-
-commit 8b291ab
-Author: XAbirHasan
-Date:   Sat Jan 1 12:00:00 2023
-
-Fixed bug
-:(more)
+$ git log --oneline
+2a468b8 Added new feature
+8b291ab Fixed bug
 
 $ git reset HEAD~1
-$ git log
-commit 8b291ab
-Author: XAbirHasan
-Date:   Sat Jan 1 12:00:00 2023
-
-Fixed bug
+$ git log --oneline
+8b291ab Fixed bug
 ```
-In this example, the last commit added a new feature but it was not ready to be pushed. So, we used git reset to undo the changes and move the `HEAD` pointer one commit back.
 
-## Reset Last n number of Commits
+Here, "Added new feature" wasn't ready to be pushed, so resetting moved `HEAD` back to "Fixed bug", while the actual code from the undone commit is still sitting in the working tree, uncommitted.
+
+## Reset Last N Commits
+
 ```
 git reset HEAD~n
 ```
-This command will undo the changes made in the last "n" commits and move the `HEAD` pointer "n" commits back. It will also keep the changes made in the last "n" commits in the working tree, allowing you to make additional changes before committing again.
 
-Example:
+Same idea, but undoes the last `n` commits at once, keeping all their combined changes in your working tree.
+
 ```
-$ git log
-commit 2a468b8 (HEAD -> master)
-Author: XAbirHasan
-Date:   Mon Jan 2 12:00:00 2023
-
-Added new feature
-
-commit 8b291ab
-Author: XAbirHasan
-Date:   Sat Jan 1 12:00:00 2023
-
-Fixed bug
-
-commit 21b912b
-Author: XAbirHasan
-Date:   Fri Dec 31 12:00:00 2022
-
-Initial commit
+$ git log --oneline
+2a468b8 Added new feature
+8b291ab Fixed bug
+21b912b Initial commit
 
 $ git reset HEAD~2
-$ git log
-commit 21b912b
-Author: XAbirHasan
-Date:   Fri Dec 31 12:00:00 2022
-
-Initial commit
+$ git log --oneline
+21b912b Initial commit
 ```
-In this example, the last two commits added a new feature and fixed a bug but they were not ready to be pushed. So, we used git reset to undo the changes and move the `HEAD` pointer two commits back.
 
 ## Reset Modes
-git reset has three different modes: `--soft`, `--hard`, and `--mixed`.
 
-- `--soft`: This mode does not reset the index or working tree files. It only moves the `HEAD` pointer to the specified commit and keeps the changes made in the commits in the working tree. This mode allows you to make additional changes before committing again.
+`git reset` has three modes, controlling how much beyond the branch pointer gets touched:
 
-- `--hard`: This mode resets the index and the working tree files to the state of the specified commit. It also moves the `HEAD` pointer to the specified commit. This mode discards all changes made in the commits and cannot be undone.
+- **`--soft`**: moves `HEAD` only. The index and working tree are untouched, so the undone commits' changes stay fully staged, ready to be recommitted right away. Good for combining several commits into one.
+- **`--mixed`** (the default): moves `HEAD` and resets the index, but leaves your working tree files alone. Your changes go from "committed" to "modified, not staged," letting you restage exactly what you want.
+- **`--hard`**: moves `HEAD` and resets both the index and working tree to match. This discards the undone commits' changes completely and cannot be undone through normal means, only `git reflog` can help you recover from it.
 
-- `--mixed`: This mode is the default mode and is similar to `--soft`. It resets the index to the state of the specified commit but keeps the changes made in the commits in the working tree. This mode allows you to make additional changes before committing again.
+## Reset HEAD to a Remote Branch
 
-## Reset the HEAD to origin/remote Branch
 ```
 git reset origin/<branch-name>
 ```
-This command will reset the local branch to match the state of the specified branch on the remote repository. It will also move the `HEAD` pointer to the latest commit of the specified branch. This can be useful if you want to bring your local branch up to date with the remote branch or if you want to discard local changes that were made but not yet committed.
 
-Example:
+Moves your local branch to match a remote branch exactly. Useful for bringing a local branch up to date with its remote, or discarding local commits that shouldn't have diverged in the first place.
+
 ```
 $ git branch -a
 * master
   remotes/origin/master
   remotes/origin/feature
 
-$ git log
-commit 2a468b8 (HEAD -> master)
-Author: XAbirHasan
-Date:   Mon Jan 2 12:00:00 2023
-
-Added new feature
-
 $ git reset origin/feature
-$ git log
-commit 8b291ab
-Author: Jane Doe
-Date:   Sat Jan 1 12:00:00 2023
-
-Fixed bug
 ```
-In this example, we have a local branch called "master" and two remote branches, "origin/master" and "origin/feature". We have made some changes in the local branch that were not ready to be pushed yet. But we want to reset our local branch to match the state of the "origin/feature" branch. So, we used git reset "origin/feature" to reset the local branch to match the state of the remote branch.
 
-## Reset Last Merge Commit
+Here, `master` had local changes that weren't ready to be pushed, so resetting to `origin/feature` throws them away and matches the remote branch exactly.
+
+## Reset a Merge Commit
+
 ```
 git reset --merge HEAD~1
 ```
-This command will undo the changes made in the last merge commit and move the `HEAD` pointer one commit back. It will also keep the changes made in the last merge commit in the working tree, allowing you to make additional changes before committing again.
 
-### Abort Merge Commit
+Undoes the last merge commit, moving `HEAD` back one commit while keeping the merge's changes in your working tree, in case you want to redo the merge differently.
+
+### Abort an In-Progress Merge
+
+If a merge has conflicts or errors you don't want to resolve, and you want to start over before it's committed:
+
 ```
 git reset --merge
-```
-This command will undo all changes made during the merge process and restore the state of the branches before the merge.
-
-Alternatively, you can use the command:
-```
+# or, equivalently
 git merge --abort
 ```
-This command will also undo all changes made during the merge process and restore the state of the branches before the merge.
 
-Both of these commands can be useful if you realize during a merge process that there are conflicts or errors that cannot be resolved, and you want to start over.
+Both restore your branches to exactly how they were before the merge started.
 
-## Reset specific file state
+## Reset a Specific File
+
 ```
 git reset <file>
-``` 
-This command will `reset` a specific file to its state in the last commit. This can be useful if you made changes to a file that you want to discard.
-Example:
+```
+
+Resets one file to its state in the last commit, useful for discarding changes to a single file without touching anything else.
+
 ```
 $ git status
 modified:   index.html
@@ -143,37 +104,35 @@ $ git reset index.html
 $ git status
 nothing to commit, working tree clean
 ```
-In this example, we made changes to the file `index.html` but decided to discard them. So, we used `git reset index.html` to reset the file to its state in the last commit.
 
-## Reset a specific file to its state in a specific commit
+(On Git 2.23+, `git restore --staged <file>` says the same thing more explicitly, see [Git Restore](/commands/restore).)
+
+## Reset a File to a Specific Commit
+
 ```
 git reset <commit> <file>
 ```
-This command will reset a specific file to its state in a specific commit. This can be useful if you want to revert a file to a previous state without affecting other files or commits.
-Example:
+
+Resets a single file to how it looked in `<commit>`, without touching any other files or commits. Useful for reverting one file to an earlier state while leaving the rest of your branch alone.
+
 ```
-$ git log
-commit 2a468b8 (HEAD -> master)
-Author: XAbirHasan
-Date:   Mon Jan 2 12:00:00 2023
-
-Added new feature
-
-commit 8b291ab
-Author: XAbirHasan
-Date:   Sat Jan 1 12:00:00 2023
-
-Fixed bug
+$ git log --oneline
+2a468b8 Added new feature
+8b291ab Fixed bug
 
 $ git reset 8b291ab index.html
 ```
-In this example, we have two commits, one that added a new feature and another that fixed a bug. We decided to revert the file index.html to its state in the commit that fixed the bug, so we used `git reset 8b291ab index.html` to reset the file to its state in that commit.
+
+This restores `index.html` to its state at the "Fixed bug" commit, leaving every other file as it currently is.
+
+### Shorthand: `git reset -- <file>`
 
 ```
 git reset -- <file>
 ```
-This command is a shortcut for `git reset HEAD <file>`. It will reset a specific file to its state in the last commit.
-Example:
+
+A shortcut for `git reset HEAD <file>`, resetting the file to its state in the last commit. The `--` tells Git "everything after this is a path, not a ref," useful when a filename could otherwise be confused with a branch or commit name.
+
 ```
 $ git status
 modified:   index.html
@@ -182,31 +141,29 @@ $ git reset -- index.html
 $ git status
 nothing to commit, working tree clean
 ```
-In this example, we made changes to the file index.html but decided to discard them. So, we used `git reset -- index.html` as a shortcut for `git reset HEAD index.html` to reset the file to its state in the last commit.
 
+## Reset a File to Its Remote State
 
-## Reset file with its remote state
 ```
 git reset <remote>/<branch> <file>
 ```
-This command will reset a specific file to its state in a specific branch on a remote repository. This can be useful if you want to update a file from a remote branch without affecting other files or commits.
-Example:
+
+Same idea as resetting to a specific commit, but from a remote branch, useful for pulling in just one file's changes from a remote without merging the whole branch.
+
 ```
-$ git log
-commit 2a468b8 (HEAD -> master)
-Author: XAbirHasan
-Date:   Mon Jan 2 12:00:00 2023
-
-Added new feature
-
 $ git reset origin/develop index.html
 ```
-In this example, we have a local branch called master and a remote branch called "origin/develop". We decided to update the file `index.html` from the remote branch "origin/develop", so we used `git reset origin/develop index.html` to reset the file to its state in that branch.
 
-## Summary
-In summary, `git reset` is a powerful command that allows you to undo or discard changes made in a previous commit or series of commits. It has several options and modes that can be used depending on the specific use case. It's important to understand the different modes and use cases before using this command, as it can be irreversible and may lead to loss of data.
+Here, `index.html` gets updated to match `origin/develop`'s version, without affecting any other files or commits on the local branch.
 
-All of these commands discard changes and can't be undone easily, so make a backup or use git stash before using them.
+## Notes
 
-Don't worry 😃; Even if you messed up with git, there is a way to recover everything.([checkout git reflog](/commands/reflog.md))
+All of the commands above discard changes, some recoverably, some not, so make a backup or run `git stash` first if you're not certain. `--hard` in particular can't be undone through normal Git commands.
 
+If you do mess up, `git reflog` can often get you back to where you were, see [Git Reflog](/commands/reflog).
+
+## See Also
+
+- [Git Restore](/commands/restore) - the safer, file-only alternative for staging/unstaging
+- [Git Revert](/commands/revert) - undoes a commit without rewriting history, safe on shared branches
+- [Git Reflog](/commands/reflog) - recovers commits after a `--hard` reset goes wrong

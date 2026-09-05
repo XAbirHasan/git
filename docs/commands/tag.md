@@ -1,85 +1,70 @@
-# Git tags
-Git tags are a way to mark a specific point in Git history. They are typically used to mark release versions, significant changes, or important milestones in a project. There are two types of tags in Git: `lightweight tags` and `annotated tags`.
+# Git Tags
 
-## Use cases
-- Version control - You can use tags to keep track of different versions of your code.
-- Release management - You can use tags to indicate a specific version of the code that is ready for release.
-- Feature development - You can use tags to keep track of different features being developed in the code.
+A tag marks a specific commit as significant, usually a release (`v1.0`, `v2.1.3`), so you can refer back to "the code as it was at this release" without hunting through `git log` for the right commit. Unlike a branch, a tag doesn't move once created, it stays pointed at that one commit forever.
 
-## Lightweight tags
-Lightweight tags are simple tags that point directly to a specific commit. They are easy to create and do not contain any additional information besides the tag name and the commit it points to.
+Git has two kinds: lightweight and annotated.
 
-To create a lightweight tag, use the following command:
+## Lightweight Tags
 
 ```
 git tag "tag name"
 ```
 
-For example, if you want to tag the latest commit in your project with the tag name `v1.0`, you would run the following command:
+Just a name pointing at a commit, nothing more, no message, no author, no date. Quick to create, but with no metadata if you ever need to know who tagged it or why.
+
 ```
 git tag v1.0
 ```
 
-## Annotated tags
-Annotated tags are tags that contain additional information, such as a tagger name, email address, and a message describing the purpose of the tag. Annotated tags are stored as full Git objects in the Git repository, making them more reliable and easier to manage.
-
-To create an annotated tag, use the following command:
+## Annotated Tags
 
 ```
-git tag --annotate "tag name"
-```
-or
-```
-git tag -a "tag name"
+git tag --annotate "tag name" -m "message"
+# or
+git tag -a "tag name" -m "message"
 ```
 
-For example, if you want to tag the latest commit in your project with the tag name `v1.0` and a message describing the purpose of the tag, you would run the following command:
+Stores a full Git object: tagger name, email, date, and a message, alongside the commit reference. Use these for anything you'd actually want to look back on, releases especially, lightweight tags are really meant for quick, throwaway local markers.
 
 ```
-git tag --annotate "v1.0" -m "Release version 1.0"
+git tag -a v1.0 -m "Release version 1.0"
 ```
 
-You can also add an annotated tag to a specific commit by specifying the commit's SHA hash:
+Tag a specific commit instead of the current one by adding its SHA:
 ```
-git tag --annotate "tag name" <commit-sha>
+git tag -a "tag name" <commit-sha> -m "message"
 ```
-
-For example, if you want to add an annotated tag to a specific commit with the SHA hash `abc123` and the tag name `v1.0`, you would run the following command:
-
 ```
-git tag --annotate "v1.0" abc123 -m "Release version 1.0"
+git tag -a v1.0 abc123 -m "Release version 1.0"
 ```
 
-## Pushing tags to origin
-To share your tags with others, you need to push them to a remote repository, such as the `origin` repository. You can push a single tag to the `origin` repository using the following command:
+## Pushing Tags
+
+Tags don't travel with a normal `git push`, they need to be pushed explicitly:
 
 ```
-git push origin "tag name"
+git push origin "tag name"      # one tag
+git push origin --tags          # every local tag at once
 ```
-
-For example, if you want to push the `v1.0` tag to the origin repository, you would run the following command:
 
 ```
 git push origin v1.0
 ```
 
-You can also push all of your local tags to the origin repository at once using the following command:
-```
-git push origin --tags
-```
+## Listing Tags
 
-## Listing tags
-To view a list of all the tags in your Git repository, use the following command:
-
-```
-git tag --list
-```
-or
 ```
 git tag
+# or
+git tag --list
+# filtered by pattern
+git tag --list "v1.*"
+# only tags already merged into the current branch
+git tag --merged
+# only tags NOT yet merged into the current branch
+git tag --no-merged
 ```
-
-Example:
+`--merged`/`--no-merged` are useful for cleanup: they tell you which release tags actually made it into your current branch's history and which didn't, handy for spotting a tag that got created on the wrong branch.
 
 ```
 $ git tag
@@ -88,46 +73,46 @@ v1.1
 v1.2
 ```
 
-## Listing remote tags
-To view a list of all the remote tags in a Git repository, use the following command:
-
+**Remote tags**, without fetching them first:
 ```
-$ git ls-remote --tags origin
+git ls-remote --tags origin
 ```
-Example:
-
 ```
 $ git ls-remote --tags origin
 de3fa3dccfa6a08fa1127e82e1747f9a57f9c9d6	refs/tags/v1.0
 65ba4e6ac71ac6c3a16a84a9c74d1b078f44c5d2	refs/tags/v2.0
 ```
 
-## Deleting a tag
-You may need to delete a tag if you made a mistake while creating it or if you no longer need it. Deleting a tag is a straightforward process.
+**In chronological order**, useful for seeing the release timeline at a glance:
+```
+git for-each-ref --sort=creatordate refs/tags
+```
+Use `creatordate` rather than `taggerdate` here, `taggerdate` only exists on annotated tags, lightweight tags have no tagger and sort strangely (often to one end, regardless of when they were actually created). `creatordate` falls back to the underlying commit's date for lightweight tags, so it sorts correctly either way.
 
-To delete a tag, use the following command:
+## Deleting a Tag
 
 ```
-$ git tag -d "tag name"
+git tag -d "tag name"
 ```
-
-Example:
-
 ```
 $ git tag -d v2.0
 Deleted tag 'v2.0' (was 65ba4e6)
 ```
 
-## Displaying tag information
-Displaying tag information is useful when you want to see the details of a particular tag. For example, you can see the commit message, author, and date, as well as the changes made in the file.
+This only deletes it locally. If you already pushed it, the remote still has its own copy, delete that separately:
+```
+git push origin --delete "tag name"
+# or, older syntax with the same effect
+git push origin :refs/tags/"tag name"
+```
 
-To view information about a particular tag, use the following command:
+## Displaying Tag Information
 
 ```
-$ git show "tag name"
+git show "tag name"
 ```
-For example:
 
+For an annotated tag, this shows the tag's own message and metadata, then the commit it points to:
 ```
 $ git show v3.0
 commit 9e874b8af9270824e6784eebb79cc3bc3f863fa8
@@ -144,36 +129,8 @@ index e69de29..1b2e1d63 100644
 +This is a new line in the file
 ```
 
-## Listing tags by date
-Listing tags by date is useful when you want to see the tags in chronological order. This can help you understand the development timeline and keep track of changes made to the code over time.
+## See Also
 
-To list tags in order of creation date, use the following command:
-
-```
-$ git for-each-ref --sort=taggerdate refs/tags
-```
-For example:
-
-```
-$ git for-each-ref --sort=taggerdate refs/tags
-9e874b8af9270824e6784eebb79cc3bc3f863fa8 tag: v3.0, tagger: XAbirHasan <abir@example.com>, Wed Jan 11 14:30:00 2023 -0800
-65ba4e6ca43c298250cee96991df9d65db38c2f7 tag: v2.0, tagger: XAbirHasan <abir@example.com>, Tue Jan 10 14:00:00 2023 -0800
-```
-
-## Merging tags
-Merging tags is useful when you have multiple tags that represent the same version of the code and you want to combine them into a single tag. This can help you keep your Git repository organized and ensure that you have a clear and concise history of your code changes.
-
-To merge two or more tags into a single tag, use the following command:
-
-```
-$ git tag -a "new tag name" "existing tag name1" "existing tag name2"
-```
-For example:
-
-```
-$ git tag -a v3.5 v3.0 v3.1
-```
-
-
-## Conclusion
-Git tags are an important tool for managing and tracking code changes in a Git repository. By using tags, you can keep track of different versions of the code, manage releases, and keep track of development progress. The commands for creating, deleting, and managing tags in Git are straightforward and easy to use.
+- [Git Log](/commands/log) - finding the commit you want to tag
+- [Git Push](/commands/push) - the general push mechanics tags build on
+- [Git Branch](/commands/branch) - the moving counterpart to a tag's fixed point

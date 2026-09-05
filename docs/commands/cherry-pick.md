@@ -1,90 +1,88 @@
-# Cherry-pick
-The `git cherry-pick` is a command used to apply a specific commit from one branch onto another branch. It allows you to pick a commit and apply its changes to a different branch, even if they are not directly connected through merging.
- 
-## Use-case
-### Applying bug fixes to a stable branch
+# Cherry-Pick
 
-Imagine you're working on a feature that will take a few more days to complete. However, within the same branch, you've also fixed some critical bugs. In such a scenario, you can utilize Git cherry-pick to selectively copy the bug fixes from one branch to another (e.g., from a bug-fix branch to your main branch) and proceed with making a release.
+Ever needed just one commit from another branch, without merging the whole thing? That's what `git cherry-pick` is for: it takes a specific commit and replays it onto your current branch, as if you'd made that change here yourself.
 
-### Incorporating a specific feature from another branch
+## When You'd Use It
 
-Suppose you are working on a long-term feature branch `(feature-a)` but need to include a specific feature that was developed and committed in a different branch `(feature-b)`. You can cherry-pick the commit containing the desired feature from `feature-b` onto your `feature-a` branch:
+**Applying a bug fix to a stable branch.** Say you're mid-way through a feature that'll take a few more days, but you've also fixed a critical bug on the same branch. You don't want to wait for the whole feature to ship before the fix goes out. Cherry-pick lets you copy just that bug fix onto your stable branch and release it right away.
+
+**Grabbing one feature out of a long-running branch.** Say `feature-b` has a specific improvement you need in `feature-a`, but `feature-b` isn't ready to merge as a whole. Cherry-pick the one commit you actually need:
+
 ```
 git checkout feature-a
 git cherry-pick <feature-b-commit-hash>
 ```
-This allows you to selectively merge the specific feature commit into your branch without merging the entire feature-b branch.
 
-### Command
-Here's an example of how to use `git cherry-pick`:
+## Basic Usage
 
-1. Start by checking out the branch where you want to apply the commit:
+1. Check out the branch you want the commit applied to:
     ```
     git checkout <target_branch>
     ```
-2. Identify the commit you want to cherry-pick. You can find the commit hash by using `git log` or other Git history visualization tools.
-3. Cherry-pick the commit onto the target branch:
+2. Find the commit you want, `git log` works, or any Git history tool.
+3. Cherry-pick it:
     ```
     git cherry-pick <commit_hash>
     ```
-Replace `<commit_hash>` with the actual commit hash you want to cherry-pick.
 
-Once the cherry-pick command is executed, Git will apply the changes made by the chosen commit onto the current branch.
+Git applies that commit's changes on top of your current branch as a new commit.
 
-## Cherry-pick multiple commits onto the current branch
-You can cherry pick multiple commits at once.
+## Cherry-Picking Multiple Commits
 
-- Cherry-pick multiple commits using individual commit hashes:
-    ```
-    git cherry-pick <commit_hash1> <commit_hash2> <commit_hash3>
-    ```
-This command applies the changes from each specified commit onto the current branch one by one.
-- Cherry-pick a range of commits using commit hashes:
-    ```
-    git cherry-pick <start_commit_hash>^..<end_commit_hash>
-    ```
-This command applies the changes from all the commits within the specified range onto the current branch.
+By individual hashes, applied one after another:
+```
+git cherry-pick <commit_hash1> <commit_hash2> <commit_hash3>
+```
 
-When `cherry-picking` multiple commits, conflicts may arise if the changes overlap. Git will pause the `cherry-pick` process and allow you to resolve conflicts before proceeding.
+Or as a range:
+```
+git cherry-pick <start_commit_hash>^..<end_commit_hash>
+```
+This applies every commit from `<start_commit_hash>` through `<end_commit_hash>`, inclusive.
 
-Cherry-picking multiple commits can change the order or content of the commits compared to their original order in the source branch. Review and test the cherry-picked commits to make sure you get the outcome you want.
+If the commits touch overlapping code, you may hit conflicts partway through. Git pauses and lets you resolve them before continuing. And since cherry-picking multiple commits replays them individually onto a new base, always double-check the result actually matches what you expected, it's easy for the combined effect to come out slightly different than it looked on the original branch.
 
-## Do not want to immediately create a new commit
-If you want to pick a change from another commit using git cherry-pick but do not want to immediately create a new commit, you can use the `-n` or `--no-commit` option. This option allows you to apply the changes from the specified commit without automatically committing them.
+## Cherry-Pick Without Committing
+
 ```
 git cherry-pick -n <commit-hash>
+# or
+git cherry-pick --no-commit <commit-hash>
 ```
 
-## Want to edit the commit message
-If you want to edit the commit message while cherry-picking a commit, you can use the `--edit` or `-e` option with the git commit command.
+Applies the commit's changes to your working directory and staging area, but doesn't create a commit. Useful when you want to review or combine the change with something else before committing it yourself.
+
+## Editing the Commit Message
+
 ```
-git cherry-pick <commit-hash>
+git cherry-pick --edit <commit-hash>
+# or
+git cherry-pick -e <commit-hash>
 ```
 
-## Canceling a Git Cherry-Pick Operation
+Opens the commit message in your editor before finalizing, so you can adjust it (for example, to note that this is a cherry-pick from another branch) instead of keeping the original message as-is.
 
-There are different scenarios where you may need to cancel a Git cherry-pick operation. Here's how you can handle each scenario:
+## Canceling a Cherry-Pick
 
-### Merge conflicts during cherry-pick
-If you encounter merge conflicts while running `git cherry-pick <commit_hash>`, the cherry-pick operation is not complete yet. To cancel the process and return to the previous state, you can use the following command:
+**Mid-conflict, not finished yet:**
 ```
 git cherry-pick --abort
 ```
-This command will abort the cherry-pick operation and restore your repository to its state before the cherry-pick was attempted.
+Backs out completely and restores your branch to how it was before you started.
 
-### Completed cherry-pick and you want to revert it
-If the cherry-pick operation is already complete, and you want to go back to the previous state, you can treat the cherry-picked commit as any other commit. To undo it, you can use the following command:
+**Already completed, and you want to undo it:**
 ```
 git reset --hard HEAD~1
 ```
-This command resets the HEAD pointer to the previous commit, effectively removing the cherry-picked commit from the branch. Keep in mind that this command is a hard reset, which discards any local changes. Make sure to stash your changes before executing this command if you have any.
-
-If you have cherry-pick multiple commits and want to undo them, you can use the `git reset --hard HEAD~n` command, where `n` represents the number of commits you want to go back. This command will reset the branch to the commit n steps before the current HEAD commit.
-
-For example, if you cherry-picked `3` commits and want to undo them all, you can run:
+This removes the most recent commit, which is the one the cherry-pick created. If you cherry-picked several commits and want to undo all of them, use `HEAD~n` for however many you applied:
 ```
 git reset --hard HEAD~3
 ```
-This command will remove the last `3` commits from the branch's history, discarding any changes made in those commits. The branch pointer and the working directory will be reset to the state of the commit `n` steps before the current `HEAD`.
 
-A hard reset with git reset `--hard` is a destructive operation: it permanently discards commits and changes. Make sure you have a backup or a copy of any important changes before performing a hard reset.
+⚠️ `--hard` discards any uncommitted changes along with the cherry-picked commits. Stash anything you want to keep before running it.
+
+## See Also
+
+- [Git Rebase](/commands/rebase) - moving a whole branch instead of individual commits
+- [Git Revert](/commands/revert) - undoing a commit without rewriting history
+- [Git Reflog](/commands/reflog) - recovering a commit after an accidental hard reset
