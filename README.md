@@ -16,7 +16,7 @@ When I first started using Git, I was intimidated by it: the commands, the branc
 
 ## Contributing
 
-Contributions are welcome: bug reports, new content, and typo fixes all help. Feel free to open an issue or PR.
+Contributions are welcome: bug reports, new content, and typo fixes all help. Feel free to open an issue or PR. See [CONTRIBUTING.md](./CONTRIBUTING.md) for the writing style this guide follows.
 
 ## License
 
