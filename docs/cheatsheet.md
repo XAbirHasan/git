@@ -370,7 +370,14 @@ git branch --merged
 
 ### Create a New Branch
 ```bash
-git branch -b "branch name"
+git branch "branch name"
+```
+
+### Create and Switch to a New Branch
+```bash
+git checkout -b "branch name"
+# or (Git 2.23+)
+git switch -c "branch name"
 ```
 
 ### Rename a Branch

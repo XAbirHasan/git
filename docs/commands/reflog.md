@@ -69,7 +69,7 @@ If you have set the expiry time to a longer duration or never, and now you want 
 
 ## Tree view of git reflog (works with gitk)
 ```
-gitk --all git reflog | cut -c1-7`
+gitk --all `git reflog | cut -c1-7`
 ```
 This command is used to view a tree view of the reference logs in your repository. This command can only be used with `gitk`.
 

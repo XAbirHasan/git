@@ -18,7 +18,7 @@ Date:   Wed Jan 11 14:30:00 2023 -0800
 Add new feature to the application
 
 commit 5c8f07a7b4f4d4f4f4f4f4f4f4f4f4f4f4f4f4f4
-Author: XAbirHasan <abir-hasan@example.com>
+Author: XAbirHasan <abir@example.com>
 Date:   Tue Jan 10 14:00:00 2023 -0800
 
 Fix bug in the login page

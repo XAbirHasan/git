@@ -88,7 +88,7 @@ In this example, the initial commit was made without the file forgot_to_include.
 
 ### Amending a Commit Without Changing the Commit Message
 ```
-git commit --ammend --no-edit
+git commit --amend --no-edit
 ```
 The `--no-edit` option allows developers to make changes to the most recent commit without modifying the commit message. This can be useful if a developer needs to make a small change to their last commit, such as forgetting to add a file or fixing a typo in the commit message.
 

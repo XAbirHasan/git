@@ -83,17 +83,18 @@ In this example, the branches "develop" and "feature-A" have been already merged
 ## Create a new branch
 
 ```
-git branch -b "branch name"
+git branch "branch name"
 ```
-This command will create a new branch with the specified name and switch to it. This is useful when starting to work on a new feature or bug fix.
+This command creates a new branch with the specified name, but does **not** switch to it — you stay on your current branch. To create a branch and switch to it in one step, use `git checkout -b "branch name"` or, on Git 2.23+, `git switch -c "branch name"`.
 
 Example:
 
 ```
-$ git branch -b feature-B
-Switched to a new branch 'feature-B'
+$ git branch feature-B
+$ git checkout -b feature-C
+Switched to a new branch 'feature-C'
 ```
-In this example, a new branch called feature-B was created and the user is now working on it.
+In this example, `feature-B` was created but not checked out, while `feature-C` was created and switched to immediately.
 
 ## Rename a branch
 
@@ -161,12 +162,12 @@ git checkout -
 This command will switch to the most recently checked out branch. It is useful for quickly switching between branches.
 
 
-# git switch (git 2.23 and onwards)
-## Create a branch:
+## git switch (git 2.23 and onwards)
+### Create a branch:
 ```
 git switch --create "branch name"
 ```
-This command is the same as `git branch -b` and will create a new branch with the given name and switch to it.
+This command is the same as `git checkout -b` and will create a new branch with the given name and switch to it.
 
 Example:
 
@@ -174,17 +175,17 @@ Example:
 $ git switch --create new-feature-branch
 ```
 
-## Checkout to a specific branch:
+### Checkout to a specific branch:
 ```
 git switch "branch name"
 ```
 This command is the same as `git checkout` and will switch to the specified branch
 
-## Switch between recent two branches:
+### Switch between recent two branches:
 ```
 git switch -
 ```
 This command is the same as git checkout - and will switch to the most recently checked out branch.
 
-# Why should you use git branch?
+## Why should you use git branch?
 In summary, Git branches are an important aspect of version control, allowing developers to work on multiple features or bug fixes in parallel. The commands listed above provide various ways to manage branches, including creating new branches, switching between branches, and deleting branches that are no longer needed. The `git switch` command is a new addition to git and is similar to the existing `git branch` and `git checkout` commands. It is available in git version 2.23 and onwards.
