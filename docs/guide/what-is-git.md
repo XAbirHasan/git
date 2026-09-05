@@ -16,12 +16,12 @@ For example, a software development team is working on a project. Each member of
 
 ### Data Science Example
 
-In data science, git is useful for versioning the data, code and experiments. For example, as a data scientist, you could use git to version control your Jupyter notebooks and Python scripts, as well as the data you're using for your analysis. This allows you to easily reproduce your results and collaborate with other data scientists on the same project. Additionally, you can use git to version control your machine learning models and experiment with different versions of your model.
+In data science, git is useful for versioning the data, code and experiments. For example, as a data scientist, you could use git to version control your Jupyter notebooks and Python scripts, as well as the data you're using for your analysis. This allows you to easily reproduce your results and collaborate with other data scientists on the same project. You can also use git to version control your machine learning models and experiment with different versions of your model.
 
 ## Key Benefits
 
 - **Version Control**: Track every change made to your code
-- **Collaboration**: Work seamlessly with team members
+- **Collaboration**: Work with team members without stepping on each other's changes
 - **Branching**: Experiment without affecting the main codebase
 - **History**: View complete project history and who made what changes
 - **Backup**: Distributed nature means every clone is a full backup

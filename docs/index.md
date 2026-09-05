@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "Git Mastery Guide"
   text: "Boost your productivity with Git"
-  tagline: From the basics to advanced techniques — for beginners and experienced users alike
+  tagline: From the basics to advanced techniques, for beginners and experienced users alike
   image:
     src: /logo.svg
     alt: Git Logo

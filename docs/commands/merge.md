@@ -41,7 +41,7 @@ Fast-forward
  1 file changed, 10 insertions(+)
 ```
 
-Git simply moves the pointer forward—no merge commit is created.
+Git simply moves the pointer forward. No merge commit is created.
 
 ## Merge Options
 

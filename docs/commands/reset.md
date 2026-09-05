@@ -206,7 +206,7 @@ In this example, we have a local branch called master and a remote branch called
 ## Summary
 In summary, `git reset` is a powerful command that allows you to undo or discard changes made in a previous commit or series of commits. It has several options and modes that can be used depending on the specific use case. It's important to understand the different modes and use cases before using this command, as it can be irreversible and may lead to loss of data.
 
-It's important to note that all of these commands will discard changes and cannot be undone easily, so it's always a good idea to make a backup or use git stash before using them. 
+All of these commands discard changes and can't be undone easily, so make a backup or use git stash before using them.
 
 Don't worry 😃; Even if you messed up with git, there is a way to recover everything.([checkout git reflog](/commands/reflog.md))
 

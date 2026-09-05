@@ -204,7 +204,7 @@ git log --pretty=short -u -L <start line>,<end line>:<file name>
 
 The output of this command will show the commit history for the specified line range, along with the changes made in each commit.
 
-It's important to note that using Git to view the history of specific lines can be useful for debugging or understanding changes made to a specific part of a file, but it is not recommended to rely on Git to determine the ownership or authorship of a specific line of code.
+Viewing the history of specific lines is useful for debugging or understanding changes made to a part of a file, but don't rely on Git to determine the ownership or authorship of a specific line of code.
 
 Explanation of the options used:
 - `--pretty=short` specifies the format of the commit log output, in this case using a short format that includes only the first line of the commit message, the author, and the date.

@@ -47,7 +47,7 @@ This command applies the changes from all the commits within the specified range
 
 When `cherry-picking` multiple commits, conflicts may arise if the changes overlap. Git will pause the `cherry-pick` process and allow you to resolve conflicts before proceeding.
 
-It's worth noting that cherry-picking multiple commits can change the order or content of the commits compared to their original order in the source branch. Make sure to review and test the cherry-picked commits to ensure the desired outcome.
+Cherry-picking multiple commits can change the order or content of the commits compared to their original order in the source branch. Review and test the cherry-picked commits to make sure you get the outcome you want.
 
 ## Do not want to immediately create a new commit
 If you want to pick a change from another commit using git cherry-pick but do not want to immediately create a new commit, you can use the `-n` or `--no-commit` option. This option allows you to apply the changes from the specified commit without automatically committing them.
@@ -87,4 +87,4 @@ git reset --hard HEAD~3
 ```
 This command will remove the last `3` commits from the branch's history, discarding any changes made in those commits. The branch pointer and the working directory will be reset to the state of the commit `n` steps before the current `HEAD`.
 
-It's important to note that a hard reset with git reset `--hard` is a destructive operation, as it permanently discards commits and changes. Make sure you have a backup or have a copy of any important changes before performing a hard reset.
+A hard reset with git reset `--hard` is a destructive operation: it permanently discards commits and changes. Make sure you have a backup or a copy of any important changes before performing a hard reset.

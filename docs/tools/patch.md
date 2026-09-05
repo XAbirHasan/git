@@ -6,7 +6,7 @@ The patch file contains information about the changes made in the form of a "dif
 
 A patch file can be useful when you want to share changes with others without giving them access to your entire codebase. It can also be useful when you want to apply changes made by others to your codebase or when you have different versions of the same codebase and you want to merge them.
 
-It's important to note that patch files can be complex, and applying them can sometimes cause conflicts with the existing code. Therefore, it's advisable to test the patch file before applying it to your codebase, specially when you are applying it to a different version of the same codebase.
+Patch files can be complex, and applying them can sometimes cause conflicts with the existing code. Test the patch file before applying it to your codebase, especially when applying it to a different version of the same codebase.
 
 ## Make Patch File
 
@@ -84,7 +84,7 @@ git am < file.patch
 ```
 This command is useful when you want to apply changes made by others to your codebase, especially when the changes are made in multiple commits. It is also useful when you want to apply changes made to a different version of the same codebase and you have them in a patch file format.
 
-It's important to note that the `git am` command will create new commits for each patch, whereas the `git apply` command will make changes to the working tree and will not create new commits.
+The `git am` command creates new commits for each patch, whereas `git apply` changes the working tree without creating new commits.
 
 Example:
 
@@ -197,4 +197,4 @@ git diff abc123 def456 -- main.c main.h > changes.patch
 ```
 
 ## Notes
-These commands can be useful in different situations, depending on what you want to achieve with your patch files. It's important to note that you should use them carefully❗ and test them before applying them to your codebase, specially when you are using them for specific commits or files.
+These commands are useful in different situations, depending on what you want to achieve with your patch files. Use them carefully❗ and test them before applying them to your codebase, especially when using them for specific commits or files.
