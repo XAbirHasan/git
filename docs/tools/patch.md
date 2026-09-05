@@ -1,200 +1,155 @@
 # Patch: what & why?
 
-A patch is a file that contains a description of the changes made to a specific file or set of files. It is used to share changes with others or to apply changes to a different version of the same codebase.
+A patch is a file describing the changes made to one or more files, in the standard `diff` format: which lines were added, removed, or modified, and where. Use it to share changes without handing over your whole codebase, or to apply someone else's changes to your own copy.
 
-The patch file contains information about the changes made in the form of a "diff", which is a standard format used to describe the differences between two sets of data. The <b>diff</b> describes the lines that have been added, removed, or modified in a file, and also indicates the location of these changes.
+Patches can conflict with the target code, especially when applying them to a different version of the codebase than they were generated against. Check with `git apply --check` before applying for real (see below).
 
-A patch file can be useful when you want to share changes with others without giving them access to your entire codebase. It can also be useful when you want to apply changes made by others to your codebase or when you have different versions of the same codebase and you want to merge them.
-
-Patch files can be complex, and applying them can sometimes cause conflicts with the existing code. Test the patch file before applying it to your codebase, especially when applying it to a different version of the same codebase.
-
-## Make Patch File
+## Make a patch file
 
 ```
 git diff > fileName.patch
 ```
-The `git diff` command can be used to create a patch file. This command is useful when you want to share changes with others without giving them access to your entire codebase. It is also useful when you want to apply changes to a different version of the same codebase.
 
-Example:
-
-Let's say you have made changes to a file called `main.c` and you want to share those changes with a collaborator. You can use the following command to create a patch file:
+`git diff` writes your unstaged changes to stdout; redirect it to a file to save them as a patch. Handy for handing a change to a collaborator, or attaching it to an issue, without giving them repo access.
 
 ```
 git diff > main.c.patch
 ```
-This will create a patch file called `main.c.patch` that contains a description of the changes made to the `main.c` file.
 
-## Make Patch File from Stage
+This captures your unstaged changes to `main.c` into `main.c.patch`.
 
-If you want to create a patch file that contains only the changes that have been staged using `git add`, you can use the `--staged` or `--cached` option with the `git diff` command.
+## Patch from staged changes
+
+Add `--staged` (or the equivalent `--cached`) to include only what's staged with `git add`. Use this when you've staged part of a larger change and only want to share that slice.
+
 ```
 git diff --staged > fileName.patch
 // or
 git diff --cached > fileName.patch
 ```
-This command is useful when you want to create a patch file that contains only the changes that are ready to be committed. It is also useful when you want to share changes that are not yet committed with others.
-
-Example:
-
-Let's say you have made changes to a file called `main.c` and you have staged some of those changes using `git add`. You can use the following command to create a patch file that contains only the staged changes:
 
 ```
 git diff --staged > main.c.patch
 ```
 
-## Apply Patch Changes
-
-Once you have a patch file, you can use the `git apply` command to apply the changes to a different version of the same codebase.
+## Apply patch changes
 
 ```
 git apply fileName.patch
 ```
-This command is useful when you want to apply changes made by others to your codebase. It is also useful when you want to apply changes made to a different version of the same codebase.
 
-Example:
-
-Let's say you have a patch file called `main.c.patch` that contains changes made to the `main.c` file. You can use the following command to apply those changes to your codebase:
+`git apply` applies the patch to your working tree directly, without creating a commit. Good for a quick local test of someone's change before you decide whether to commit it.
 
 ```
 git apply main.c.patch
 ```
 
-## Patch from n top commits
+## Patch from the last n commits
 
-If you want to create a patch file that contains the changes made in several commits, you can use the `git format-patch` command. The `-n` option can be used to specify the number of commits you want to include in the patch file.
-
-```
-git format-patch -n <sha>
-```
-Example:
-
-Let's say you have made 5 commits and you want to create a patch file that contains the changes made in the last 3 commits. You can use the following command:
+`git format-patch -n <sha>` writes one patch file per commit, starting from `<sha>`. Use it over plain `git diff` when you want to preserve commit boundaries, authors, and messages, for example to email a series of patches or hand off a reviewable commit history.
 
 ```
 git format-patch -3 HEAD
 ```
-This will create 3 patch files, one for each of the last 3 commits, that you can share with others or apply to a different version of the same codebase.
 
-## Apply Patch Changes (format-patch)
+This produces three files, one for each of the last three commits reachable from `HEAD`.
 
-Once you have created a patch file using the `git format-patch` command, you can use the `git am` command to apply the changes to your codebase.
+## Apply patch changes (format-patch)
 
 ```
 git am < file.patch
 ```
-This command is useful when you want to apply changes made by others to your codebase, especially when the changes are made in multiple commits. It is also useful when you want to apply changes made to a different version of the same codebase and you have them in a patch file format.
 
-The `git am` command creates new commits for each patch, whereas `git apply` changes the working tree without creating new commits.
-
-Example:
-
-Let's say you have a patch file called `main.c.patch` that contains changes made to the `main.c` file. You can use the following command to apply those changes to your codebase:
+`git am` applies a patch created by `format-patch` and creates a commit for each one, including the original author and message. This is the key difference from `git apply`, which only touches the working tree.
 
 ```
 git am < main.c.patch
 ```
 
 ## Revert a patch
-You can use the `git apply -R` command to revert changes made by a patch file. This command works similarly to git apply, but it undoes the changes made by the patch file.
+
+`git apply -R` undoes a patch that was applied with `git apply`. Use it when a patch turns out to be wrong or unwanted after the fact, instead of hand-reverting the edits.
 
 ```
 git apply -R fileName.patch
 ```
 
-Example:
-
-Let's say you have applied a patch file called `main.c.patch` to your codebase and now you want to undo the changes made by the patch file. You can use the following command:
-
 ```
 git apply -R main.c.patch
 ```
 
-## Check the status of a patch
-You can use the `git apply --check` command to check if a patch file can be applied without errors. This command does not make any changes to your codebase, it only checks for conflicts or other issues.
+## Check a patch before applying it
+
+`git apply --check` verifies a patch will apply cleanly without touching your files:
+
 ```
 git apply --check fileName.patch
 ```
-
-Example:
-
-Let's say you want to check if a patch file called `main.c.patch` can be applied to your codebase without errors. You can use the following command:
 
 ```
 git apply --check main.c.patch
 ```
 
-## Check the details of a patch
-You can use the `git show` command to view the details of a patch file, including the changes made, the author, and the commit message.
+## Inspect a patch
+
+`git show` prints a patch file's changes, author, and commit message:
+
 ```
 git show fileName.patch
 ```
-
-Example:
-
-Let's say you want to view the details of a patch file called `main.c.patch`. You can use the following command:
 
 ```
 git show main.c.patch
 ```
 
-## Create patch file for specific files
-You can use the `git diff` command to create a patch file for specific files. This command works similarly to `git diff > fileName.patch`, but you can specify the files you want to include in the patch file.
+## Patch for specific files
+
+Pass paths after `--` to limit the diff to those files. Useful when your working tree has unrelated changes mixed in and you only want to patch out one feature's worth.
+
 ```
 git diff -- file1 file2 > fileName.patch
 ```
-Example:
-
-Let's say you want to create a patch file that contains changes made to the files `main.c` and `main.h`. You can use the following command:
 
 ```
 git diff -- main.c main.h > main.patch
 ```
-These commands can be useful in different situations, depending on what you want to achieve with your patch files.
 
+## Patch between two commits
 
-## Create patch file for specific commits
-You can use the `git diff` command to create a patch file for specific commits. This command works similarly to `git format-patch`, but it only includes the changes made in the specified commits.
+Compares two commits directly, without generating one file per commit in between. Good for seeing the net effect of a range at once.
 
 ```
 git diff <commit-sha1> <commit-sha2> > fileName.patch
 ```
 
-Example:
-
-Let's say you want to create a patch file that contains changes made between commits `abc123` and `def456`. You can use the following command:
-
 ```
 git diff abc123 def456 > changes.patch
 ```
 
-## Create patch file for specific branch
-You can use the `git diff` command to create a patch file for specific branch. This command is useful when you want to compare changes between two branches.
+## Patch between two branches
+
+Same idea, applied to branch tips. Handy for previewing what a feature branch would change before merging it into master.
 
 ```
 git diff <branch1> <branch2> > fileName.patch
 ```
 
-Example:
-
-Let's say you want to create a patch file that contains changes made between the master and the feature branches. You can use the following command:
-
 ```
 git diff master feature > changes.patch
 ```
-## Create patch file for specific files in specific commits
-You can use the `git diff` command to create a patch file for specific files in specific commits. This command is useful when you want to compare changes between two commits or branches.
+
+## Patch for specific files between two commits
+
+Combine the file filter with a commit range:
 
 ```
 git diff <commit-sha1> <commit-sha2> -- <file1> <file2> > fileName.patch
 ```
-
-Example:
-
-Let's say you want to create a patch file that contains changes made to the files `main.c` and `main.h` between the commits `abc123` and `def456`. You can use the following command:
 
 ```
 git diff abc123 def456 -- main.c main.h > changes.patch
 ```
 
 ## Notes
-These commands are useful in different situations, depending on what you want to achieve with your patch files. Use them carefully❗ and test them before applying them to your codebase, especially when using them for specific commits or files.
+
+Test patches, especially cross-commit or cross-branch ones, with `git apply --check` before applying them for real: conflicts are easy to hit when the target code has diverged.
